@@ -1,50 +1,98 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Smartphone, AlertCircle, RefreshCw } from "lucide-react"
+import { Smartphone, AlertCircle, RefreshCw, Search, Database, Clock } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { LoadingAnimation } from "@/components/loading-animation"
 import { fetchBrandFiles } from "@/lib/api-client"
 import { parseBrandName } from "@/lib/data-parser"
+import { cacheManager } from "@/lib/cache-manager"
 import type { Brand } from "@/types/phone-models"
 
 export default function HomePage() {
   const router = useRouter()
-  const [brands, setBrands] = useState<Brand[]>([])
+  const [allBrands, setAllBrands] = useState<Brand[]>([])
+  const [filteredBrands, setFilteredBrands] = useState<Brand[]>([])
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchInput, setSearchInput] = useState("")
   const [loading, setLoading] = useState(true)
+  const [loadingMessage, setLoadingMessage] = useState("")
   const [error, setError] = useState("")
   const [retryCount, setRetryCount] = useState(0)
+  const [isFromCache, setIsFromCache] = useState(false)
+  const [cacheInfo, setCacheInfo] = useState<{ age?: number; expiresIn?: number } | null>(null)
 
   useEffect(() => {
     async function loadBrands() {
       setLoading(true)
       setError("")
+      setLoadingMessage("Initializing...")
 
       try {
         console.log("Loading brands...")
-        const files = await fetchBrandFiles()
 
-        if (files.length === 0) {
-          setError("No brand files found in the repository")
-          return
+        const cacheKey = "brands_list"
+
+        // Check cache first
+        const cachedBrands = cacheManager.get<Brand[]>(cacheKey)
+
+        if (cachedBrands) {
+          console.log("Loading brands from cache")
+          setLoadingMessage("Loading from cache...")
+          setAllBrands(cachedBrands)
+          setFilteredBrands(cachedBrands)
+          setIsFromCache(true)
+
+          const info = cacheManager.getCacheInfo(cacheKey)
+          setCacheInfo(info)
+
+          // Simulate brief loading for better UX
+          await new Promise((resolve) => setTimeout(resolve, 500))
+        } else {
+          console.log("Fetching fresh brands data")
+          setLoadingMessage("Fetching brands from repository...")
+          setIsFromCache(false)
+
+          const files = await fetchBrandFiles()
+
+          if (files.length === 0) {
+            setError("No brand files found in the repository")
+            return
+          }
+
+          setLoadingMessage("Processing brand information...")
+          await new Promise((resolve) => setTimeout(resolve, 300)) // Brief pause for UX
+
+          const brandList: Brand[] = files
+            .map((file) => {
+              const { name, slug } = parseBrandName(file.name)
+              return {
+                name,
+                slug,
+                filename: file.name,
+                models: [],
+              }
+            })
+            .sort((a, b) => a.name.localeCompare(b.name))
+
+          console.log("Processed brands:", brandList.length)
+
+          // Cache the brands data
+          cacheManager.set(cacheKey, brandList)
+          console.log("Brands data cached")
+
+          setAllBrands(brandList)
+          setFilteredBrands(brandList)
+
+          const info = cacheManager.getCacheInfo(cacheKey)
+          setCacheInfo(info)
         }
-
-        const brandList: Brand[] = files
-          .map((file) => {
-            const { name, slug } = parseBrandName(file.name)
-            return {
-              name,
-              slug,
-              filename: file.name,
-              models: [],
-            }
-          })
-          .sort((a, b) => a.name.localeCompare(b.name))
-
-        console.log("Loaded brands:", brandList.length)
-        setBrands(brandList)
       } catch (error) {
         console.error("Error loading brands:", error)
         const errorMessage = error instanceof Error ? error.message : "Unknown error"
@@ -66,6 +114,28 @@ export default function HomePage() {
     loadBrands()
   }, [retryCount])
 
+  // Handle search
+  const handleSearch = () => {
+    setSearchQuery(searchInput.trim())
+  }
+
+  // Filter brands based on search query
+  useEffect(() => {
+    const trimmedQuery = searchQuery.trim()
+    if (trimmedQuery) {
+      console.log("Searching brands:", trimmedQuery)
+      const filtered = allBrands.filter(
+        (brand) =>
+          brand.name.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+          brand.slug.toLowerCase().includes(trimmedQuery.toLowerCase()),
+      )
+      setFilteredBrands(filtered)
+    } else {
+      // If search is empty, show all brands
+      setFilteredBrands(allBrands)
+    }
+  }, [allBrands, searchQuery])
+
   const handleBrandClick = (brandSlug: string) => {
     router.push(`/${brandSlug}`)
   }
@@ -74,18 +144,21 @@ export default function HomePage() {
     setRetryCount((prev) => prev + 1)
   }
 
+  // Handle Enter key press
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch()
+    }
+  }
+
+  // Clear cache and reload
+  const handleRefreshData = () => {
+    cacheManager.delete("brands_list")
+    setRetryCount((prev) => prev + 1)
+  }
+
   if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-[60%] text-center">
-          <Smartphone className="h-16 w-16 text-primary mx-auto mb-6 animate-pulse" />
-          <h1 className="text-4xl font-bold text-foreground mb-2">SERAPHIM</h1>
-          <p className="text-lg text-muted-foreground mb-4">Search About Phone Informations & Models</p>
-          <p className="text-muted-foreground">Loading brands...</p>
-          {retryCount > 0 && <p className="text-sm text-muted-foreground mt-2">Retry attempt {retryCount}</p>}
-        </div>
-      </div>
-    )
+    return <LoadingAnimation message={loadingMessage} brandName="brands" />
   }
 
   if (error) {
@@ -159,21 +232,87 @@ export default function HomePage() {
             <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2">SERAPHIM</h1>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
-                Search About Phone Informations & Models
+                Search About Phone Information & Model
               </p>
             </div>
           </div>
         </div>
 
+        {/* Cache Status */}
+        {cacheInfo && (
+          <div className="mb-6">
+            <Alert className={isFromCache ? "border-blue-200 bg-blue-50" : "border-green-200 bg-green-50"}>
+              <AlertDescription className="flex items-center justify-between">
+                <span className="text-sm">
+                  {isFromCache ? (
+                    <>
+                      <Clock className="h-5 w-5 inline mr-1" />
+                      Brands loaded from cache • Data age: {Math.round((cacheInfo.age || 0) / 1000 / 60)} minutes
+                    </>
+                  ) : (
+                    <>
+                      <Database className="h-5 w-5 inline mr-1" />
+                      Fresh brands data cached for faster access
+                    </>
+                  )}
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-6 px-2 text-xs">
+                  <RefreshCw className="h-3 w-3 mr-1" />
+                  Refresh
+                </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {/* Brand Search */}
+        <div className="mb-8">
+          <label htmlFor="brand-search" className="block text-lg font-medium text-foreground mb-3">
+            Search Brands ({allBrands.length} brands available)
+          </label>
+          <div className="flex flex-col sm:flex-row gap-3 mx-auto">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                id="brand-search"
+                placeholder="Search phone brands instantly..."
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value)
+                  // If input is cleared, immediately show all brands
+                  if (e.target.value.trim() === "") {
+                    setSearchQuery("")
+                  }
+                }}
+                onKeyPress={handleKeyPress}
+                className="pl-10 h-12 text-lg"
+              />
+            </div>
+            <Button onClick={handleSearch} className="h-12 px-6 font-medium">
+              Search
+            </Button>
+          </div>
+        </div>
+
+        {/* Results Summary */}
+        {searchQuery.trim() && (
+          <div className="mb-6 text-center">
+            <p className="text-muted-foreground">
+              Showing {filteredBrands.length} of {allBrands.length} brands matching "{searchQuery}"
+              {isFromCache && " • Instant search from cache"}
+            </p>
+          </div>
+        )}
+
         {/* Brand List */}
         <div className="w-full">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-6 md:mb-8 text-center">
-            Browse by Brand
+            {searchQuery.trim() ? "Search Results" : "Browse by Brand"}
           </h2>
 
-          {brands.length > 0 ? (
+          {filteredBrands.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {brands.map((brand) => (
+              {filteredBrands.map((brand) => (
                 <Card
                   key={brand.slug}
                   className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-105"
@@ -183,11 +322,31 @@ export default function HomePage() {
                     <CardTitle className="text-base sm:text-lg text-center">{brand.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Button className="w-full text-sm sm:text-base rounded-full">View Models</Button>
+                    <Button className="w-full text-sm sm:text-base">View Models</Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
+          ) : searchQuery.trim() ? (
+            <Card>
+              <CardContent className="text-center py-12 md:py-16">
+                <Search className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4 md:mb-6" />
+                <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">No Brands Found</h3>
+                <p className="text-base sm:text-lg text-muted-foreground mb-4 md:mb-6">
+                  No brands found matching "{searchQuery}"
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSearchQuery("")
+                    setSearchInput("")
+                  }}
+                  className="w-full sm:w-auto"
+                >
+                  Clear Search
+                </Button>
+              </CardContent>
+            </Card>
           ) : (
             <Card>
               <CardContent className="text-center py-8 md:py-12">
@@ -197,6 +356,22 @@ export default function HomePage() {
             </Card>
           )}
         </div>
+
+        {/* Clear Search Button */}
+        {searchQuery.trim() && (
+          <div className="text-center mt-8">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setSearchQuery("")
+                setSearchInput("")
+              }}
+              className="w-full sm:w-auto"
+            >
+              Show All Brands
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   )

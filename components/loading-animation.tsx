@@ -6,6 +6,8 @@ interface LoadingAnimationProps {
 }
 
 export function LoadingAnimation({ message, brandName }: LoadingAnimationProps) {
+  const isLoadingBrands = brandName === "brands"
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center max-w-md mx-auto px-4">
@@ -17,8 +19,13 @@ export function LoadingAnimation({ message, brandName }: LoadingAnimationProps) 
 
         {/* Loading Text */}
         <div className="space-y-3">
-          <h2 className="text-2xl font-bold text-foreground">{brandName ? `Loading ${brandName}` : "Loading"}</h2>
-          <p className="text-muted-foreground">{message || "Fetching phone models from repository..."}</p>
+          <h2 className="text-2xl font-bold text-foreground">
+            {isLoadingBrands ? "Loading Brands" : brandName ? `Loading ${brandName}` : "Loading"}
+          </h2>
+          <p className="text-muted-foreground">
+            {message ||
+              (isLoadingBrands ? "Fetching brand list from repository..." : "Fetching phone models from repository...")}
+          </p>
 
           {/* Progress Dots */}
           <div className="flex justify-center space-x-1 mt-6">
@@ -28,7 +35,11 @@ export function LoadingAnimation({ message, brandName }: LoadingAnimationProps) 
           </div>
 
           {/* Cache Info */}
-          <p className="text-xs text-muted-foreground mt-4">Data will be cached locally for faster access</p>
+          <p className="text-xs text-muted-foreground mt-4">
+            {isLoadingBrands
+              ? "Brand list will be cached for instant search"
+              : "Data will be cached locally for faster access"}
+          </p>
         </div>
       </div>
     </div>
