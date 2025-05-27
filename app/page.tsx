@@ -232,7 +232,7 @@ export default function HomePage() {
             <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2">SERAPHIM</h1>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
-                Search About Phone Information & Model
+                Search About Phone Informations & Models
               </p>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function HomePage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
               <Input
                 id="brand-search"
-                placeholder="Search phone brands instantly..."
+                placeholder="Search phone brands instantly, press Enter to search"
                 value={searchInput}
                 onChange={(e) => {
                   setSearchInput(e.target.value)
