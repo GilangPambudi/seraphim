@@ -77,7 +77,7 @@ export default function HomePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
+        <div className="w-[60%] text-center">
           <Smartphone className="h-16 w-16 text-primary mx-auto mb-6 animate-pulse" />
           <h1 className="text-4xl font-bold text-foreground mb-2">SERAPHIM</h1>
           <p className="text-lg text-muted-foreground mb-4">Search About Phone Informations & Models</p>
