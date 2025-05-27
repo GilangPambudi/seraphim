@@ -17,8 +17,16 @@ import { parseBrandName, parseMarkdownContent, searchModels } from "@/lib/data-p
 import { cacheManager } from "@/lib/cache-manager"
 import type { PhoneModel } from "@/types/phone-models"
 
-export default function BrandDetailPage({ params }: { params: any }) {
-  const { brandSlug } = use(params) as { brandSlug: string };
+type BrandDetailPageProps = {
+  params: {
+    brandSlug: string
+  }
+}
+
+
+
+export default function BrandDetailPage({ params }: BrandDetailPageProps) {
+  const { brandSlug } = use(params)
   const router = useRouter()
   const [brandName, setBrandName] = useState("")
   const [allModels, setAllModels] = useState<PhoneModel[]>([])
