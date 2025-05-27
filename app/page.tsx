@@ -183,7 +183,7 @@ export default function HomePage() {
               </p>
               <ol className="list-decimal list-inside space-y-1">
                 <li>
-                  Create a <code className="bg-muted px-1 rounded">`.env.local`</code> file in your project root
+                  Create a <code className="bg-muted px-1 rounded">.env.local</code> file in your project root
                 </li>
                 <li>
                   Get a GitHub Personal Access Token from{" "}
@@ -298,7 +298,7 @@ export default function HomePage() {
         {searchQuery.trim() && (
           <div className="mb-6 text-center">
             <p className="text-muted-foreground">
-              Showing {filteredBrands.length} of {allBrands.length} brands matching "{searchQuery}"
+              Showing {filteredBrands.length} of {allBrands.length} brands matching &quot;{searchQuery}&quot;
               {isFromCache && " • Instant search from cache"}
             </p>
           </div>
@@ -322,7 +322,7 @@ export default function HomePage() {
                     <CardTitle className="text-base sm:text-lg text-center">{brand.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Button className="w-full text-sm sm:text-base">View Models</Button>
+                    <Button className="w-full text-sm sm:text-base rounded-full">View Models</Button>
                   </CardContent>
                 </Card>
               ))}
@@ -333,7 +333,7 @@ export default function HomePage() {
                 <Search className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4 md:mb-6" />
                 <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">No Brands Found</h3>
                 <p className="text-base sm:text-lg text-muted-foreground mb-4 md:mb-6">
-                  No brands found matching "{searchQuery}"
+                  No brands found matching &quot;{searchQuery}&quot;
                 </p>
                 <Button
                   variant="outline"
