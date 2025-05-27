@@ -159,7 +159,7 @@ export default function HomePage() {
             <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2">SERAPHIM</h1>
               <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
-                Search About Phone Information & Model
+                Search About Phone Informations & Models
               </p>
             </div>
           </div>
