@@ -6,7 +6,7 @@ interface CacheItem<T> {
 
 class CacheManager {
   private static instance: CacheManager
-  private cache: Map<string, CacheItem<any>> = new Map()
+  private cache: Map<string, CacheItem<unknown>> = new Map()
   private readonly DEFAULT_EXPIRY = 30 * 60 * 1000 // 30 minutes
 
   static getInstance(): CacheManager {
@@ -24,7 +24,7 @@ class CacheManager {
       expiry: Date.now() + expiry,
     }
 
-    this.cache.set(key, item)
+    this.cache.set(key, item as CacheItem<unknown>)
 
     // Also store in localStorage for persistence
     try {
@@ -36,17 +36,17 @@ class CacheManager {
 
   get<T>(key: string): T | null {
     // First check memory cache
-    let item = this.cache.get(key)
+    let item = this.cache.get(key) as CacheItem<T> | undefined
 
     // If not in memory, try localStorage
     if (!item) {
       try {
         const stored = localStorage.getItem(`seraphim_cache_${key}`)
         if (stored) {
-          item = JSON.parse(stored)
+          item = JSON.parse(stored) as CacheItem<T>
           // Restore to memory cache
           if (item) {
-            this.cache.set(key, item)
+            this.cache.set(key, item as CacheItem<unknown>)
           }
         }
       } catch (error) {
@@ -68,17 +68,17 @@ class CacheManager {
   // New method: Get data for search (doesn't check expiry, used for instant search)
   getForSearch<T>(key: string): T | null {
     // First check memory cache
-    let item = this.cache.get(key)
+    let item = this.cache.get(key) as CacheItem<T> | undefined
 
     // If not in memory, try localStorage
     if (!item) {
       try {
         const stored = localStorage.getItem(`seraphim_cache_${key}`)
         if (stored) {
-          item = JSON.parse(stored)
+          item = JSON.parse(stored) as CacheItem<T>
           // Restore to memory cache
           if (item) {
-            this.cache.set(key, item)
+            this.cache.set(key, item as CacheItem<unknown>)
           }
         }
       } catch (error) {
