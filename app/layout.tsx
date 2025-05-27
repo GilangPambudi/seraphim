@@ -1,34 +1,27 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type React from "react"
+import type { Metadata } from "next"
+import { Figtree } from "next/font/google"
+import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const figtree = Figtree({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+  display: "swap",
+  variable: "--font-figtree",
+})
 
 export const metadata: Metadata = {
-  title: "SERAPHIM",
-  description: "Search for phone models by brand",
-};
+  title: "SERAPHIM - Phone Model Search Engine",
+  description: "Search About Phone Information & Model",
+}
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en" className={figtree.variable}>
+      <body className={figtree.className}>{children}</body>
     </html>
-  );
+  )
 }
