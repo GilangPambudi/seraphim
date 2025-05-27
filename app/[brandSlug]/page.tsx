@@ -237,7 +237,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
         <div className="w-full">
           {/* Brand-specific Search */}
           <div className="mb-6 md:mb-8">
-            <label htmlFor="brand-search" className="block text-lg sm:text-xl font-semibold text-foreground mb-4">
+            <label htmlFor="brand-search" className="block text-lg sm:text-xl font-semibold text-foreground mb-4 text-center">
               Search within {brandName} ({allModels.length} models available)
             </label>
             <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -260,7 +260,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
 
           {/* Results Summary */}
           <div className="mb-4 md:mb-6">
-            <p className="text-muted-foreground text-base sm:text-lg md:text-xl">
+            <p className="text-muted-foreground text-base sm:text-lg md:text-xl text-center">
               Showing {filteredModels.length} of {allModels.length} model{filteredModels.length !== 1 ? "s" : ""}
               {searchQuery && ` matching "${searchQuery}"`} • Instant search from fresh data
             </p>

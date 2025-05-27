@@ -266,7 +266,7 @@ export default function HomePage() {
 
         {/* Brand Search */}
         <div className="mb-8">
-          <label htmlFor="brand-search" className="block text-xl sm:text-2xl font-medium text-foreground mb-3">
+          <label htmlFor="brand-search" className="block text-xl sm:text-2xl font-medium text-foreground mb-3 text-center">
             Search Brands ({allBrands.length} brands available)
           </label>
           <div className="flex flex-col sm:flex-row gap-3 mx-auto">
