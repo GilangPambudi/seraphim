@@ -1,3 +1,5 @@
+eslint-disable @typescript-eslint/no-explicit-any
+
 interface CacheItem<T> {
   data: T
   timestamp: number
