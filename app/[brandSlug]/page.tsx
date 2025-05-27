@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import { use } from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Search, Smartphone, AlertCircle, RefreshCw, Database, Zap } from "lucide-react"
@@ -17,13 +18,13 @@ import { cacheManager } from "@/lib/cache-manager"
 import type { PhoneModel } from "@/types/phone-models"
 
 type BrandDetailPageProps = {
-  params: {
+  params: Promise<{
     brandSlug: string
-  }
+  }>
 }
 
 export default function BrandDetailPage({ params }: BrandDetailPageProps) {
-  const { brandSlug } = params
+  const { brandSlug } = use(params)
   const router = useRouter()
   const [brandName, setBrandName] = useState("")
   const [allModels, setAllModels] = useState<PhoneModel[]>([])
