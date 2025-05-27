@@ -271,7 +271,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
               <Accordion type="multiple" className="space-y-4 md:space-y-5">
                 {Object.entries(groupedModels).map(([series, models]) => (
                   <AccordionItem key={series} value={series} className="border rounded-lg">
-                    <AccordionTrigger className="px-4 sm:px-6 py-4 sm:py-5 hover:bg-muted/50 rounded-t-lg">
+                    <AccordionTrigger className="px-4 sm:px-6 py-4 sm:py-5 hover:bg-muted/50 rounded-t-lg shadow-sm">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full mr-4 gap-2">
                         <h3 className="text-xl sm:text-2xl font-bold text-foreground text-left">{series}</h3>
                         <Badge variant="secondary" className="self-start sm:self-center text-base">
@@ -279,7 +279,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
                         </Badge>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="px-4 sm:px-6 pb-5">
+                    <AccordionContent className="px-4 sm:px-6 py-5">
                       <div className="grid gap-4 md:gap-5">
                         {models.map((model, index) => (
                           <Card key={index} className="border">
