@@ -11,7 +11,7 @@ const figtree = Figtree({
 
 export const metadata: Metadata = {
   title: "SERAPHIM - Phone Model Search Engine",
-  description: "Search About Phone Information & Model",
+  description: "Search About Phone Informations & Models",
 }
 
 export default function RootLayout({
