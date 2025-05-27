@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Smartphone, AlertCircle, RefreshCw, Search } from "lucide-react"
+import { AlertCircle, RefreshCw, Search } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -228,7 +228,6 @@ export default function HomePage() {
         {/* Header */}
         <div className="text-center mb-8 md:mb-12">
           <div className="flex flex-col sm:flex-row items-center justify-center mb-6">
-            <Smartphone className="h-12 w-12 sm:h-16 sm:w-16 text-primary mb-4 sm:mb-0 sm:mr-4" />
             <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-2">SERAPHIM</h1>
               <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground">
@@ -349,7 +348,6 @@ export default function HomePage() {
           ) : (
             <Card>
               <CardContent className="text-center py-8 md:py-12">
-                <Smartphone className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-4" />
                 <p className="text-lg sm:text-xl text-muted-foreground">No brands available</p>
               </CardContent>
             </Card>

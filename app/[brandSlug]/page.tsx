@@ -4,7 +4,7 @@ import type React from "react"
 import { use } from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Search, Smartphone, AlertCircle, RefreshCw } from "lucide-react"
+import { ArrowLeft, Search, AlertCircle, RefreshCw } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -197,7 +197,6 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
             Back to Brands
           </Button>
           <div className="flex items-center w-full sm:w-auto">
-            <Smartphone className="h-8 w-8 md:h-10 md:w-10 text-primary mr-3 md:mr-4 flex-shrink-0" />
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">{brandName} Models</h1>
           </div>
         </div>
@@ -329,7 +328,6 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
           ) : (
             <Card>
               <CardContent className="text-center py-12 md:py-16">
-                <Smartphone className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4 md:mb-6" />
                 <h3 className="text-2xl sm:text-3xl font-semibold text-foreground mb-3">
                   {searchQuery ? "No Results Found" : "No Models Available"}
                 </h3>
