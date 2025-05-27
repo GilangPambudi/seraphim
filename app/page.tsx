@@ -183,7 +183,7 @@ export default function HomePage() {
                     <CardTitle className="text-base sm:text-lg text-center">{brand.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Button className="w-full text-sm sm:text-base">View Models</Button>
+                    <Button className="w-full text-sm sm:text-base rounded-full">View Models</Button>
                   </CardContent>
                 </Card>
               ))}
