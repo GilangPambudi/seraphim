@@ -80,7 +80,7 @@ export default function HomePage() {
         <div className="text-center">
           <Smartphone className="h-16 w-16 text-primary mx-auto mb-6 animate-pulse" />
           <h1 className="text-4xl font-bold text-foreground mb-2">SERAPHIM</h1>
-          <p className="text-lg text-muted-foreground mb-4">Search About Phone Information & Model</p>
+          <p className="text-lg text-muted-foreground mb-4">Search About Phone Informations & Models</p>
           <p className="text-muted-foreground">Loading brands...</p>
           {retryCount > 0 && <p className="text-sm text-muted-foreground mt-2">Retry attempt {retryCount}</p>}
         </div>
