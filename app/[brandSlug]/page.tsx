@@ -16,6 +16,7 @@ import { fetchBrandFiles, fetchBrandMarkdown } from "@/lib/api-client"
 import { parseBrandName, parseMarkdownContent, searchModels } from "@/lib/data-parser"
 import { cacheManager } from "@/lib/cache-manager"
 import type { PhoneModel } from "@/types/phone-models"
+import Footer from "@/components/footer"
 
 type BrandDetailPageProps = {
   params: Promise<{
@@ -352,6 +353,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

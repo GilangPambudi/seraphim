@@ -14,6 +14,7 @@ import { fetchBrandFiles, fetchBrandMarkdown } from "@/lib/api-client"
 import { parseBrandName, parseMarkdownContent, searchModels } from "@/lib/data-parser"
 import { cacheManager } from "@/lib/cache-manager"
 import type { Brand, SearchResult } from "@/types/phone-models"
+import Footer from "@/components/footer"
 
 export default function HomePage() {
   const router = useRouter()
@@ -512,6 +513,7 @@ export default function HomePage() {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   )
 }
