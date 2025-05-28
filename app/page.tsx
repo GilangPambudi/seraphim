@@ -388,11 +388,11 @@ export default function HomePage() {
             <p className="text-muted-foreground text-lg">
               {searchMode === "models" ? (
                 <>
-                  Found {searchResults.length} model{searchResults.length !== 1 ? "s" : ""} matching "{searchQuery}"
+                  Found {searchResults.length} model{searchResults.length !== 1 ? "s" : ""} matching &quot;{searchQuery}&quot;
                 </>
               ) : (
                 <>
-                  Showing {filteredBrands.length} brand{filteredBrands.length !== 1 ? "s" : ""} matching "{searchQuery}"
+                  Showing {filteredBrands.length} brand{filteredBrands.length !== 1 ? "s" : ""} matching &quot;{searchQuery}&quot;
                 </>
               )}
               {isFromCache && " • Instant search from cache"}
@@ -478,7 +478,7 @@ export default function HomePage() {
                 <Search className="h-16 w-16 sm:h-20 sm:w-20 text-muted-foreground mx-auto mb-4 md:mb-6" />
                 <h3 className="text-2xl sm:text-3xl font-semibold text-foreground mb-2">No Results Found</h3>
                 <p className="text-lg sm:text-xl text-muted-foreground mb-4 md:mb-6">
-                  No brands or models found matching "{searchQuery}"
+                  No brands or models found matching &quot;{searchQuery}&quot;
                 </p>
                 <Button
                   variant="outline"
