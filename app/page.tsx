@@ -208,10 +208,6 @@ export default function HomePage() {
     router.push(`/${brandSlug}`)
   }
 
-  const handleModelClick = (result: SearchResult) => {
-    router.push(`/${result.brandSlug}`)
-  }
-
   const handleRetry = () => {
     setRetryCount((prev) => prev + 1)
   }
@@ -417,7 +413,6 @@ export default function HomePage() {
                 <Card
                   key={index}
                   className="hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02]"
-                  onClick={() => handleModelClick(result)}
                 >
                   <CardHeader className="pb-3">
                     <CardTitle className="text-xl sm:text-2xl flex items-center justify-between">
@@ -438,9 +433,6 @@ export default function HomePage() {
                           Model: <span className="font-mono font-medium">{result.modelNumber}</span>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="text-sm sm:text-base">
-                        View Details
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
