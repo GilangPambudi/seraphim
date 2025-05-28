@@ -162,22 +162,22 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-md border-destructive/20">
           <CardHeader>
-            <CardTitle className="text-destructive flex items-center text-lg">
-              <AlertCircle className="h-5 w-5 mr-2" />
+            <CardTitle className="text-destructive flex items-center text-xl">
+              <AlertCircle className="h-6 w-6 mr-2" />
               Error
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Alert variant="destructive" className="mb-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription className="text-base">{error}</AlertDescription>
+              <AlertCircle className="h-5 w-5" />
+              <AlertDescription className="text-lg">{error}</AlertDescription>
             </Alert>
             <div className="space-y-2">
-              <Button onClick={() => router.push("/")} variant="outline" className="w-full text-base">
-                <ArrowLeft className="h-4 w-4 mr-2" />
+              <Button onClick={() => router.push("/")} variant="outline" className="w-full text-lg">
+                <ArrowLeft className="h-5 w-5 mr-2" />
                 Back to Brands
               </Button>
-              <Button onClick={() => window.location.reload()} variant="outline" className="w-full text-base">
+              <Button onClick={() => window.location.reload()} variant="outline" className="w-full text-lg">
                 Try Again
               </Button>
             </div>
@@ -192,12 +192,12 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
       <div className="w-[90%] mx-auto px-4 py-6 md:py-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 md:mb-8 gap-4">
-          <Button variant="outline" onClick={() => router.push("/")} className="w-full sm:w-auto text-base">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+          <Button variant="outline" onClick={() => router.push("/")} className="w-full sm:w-auto text-lg">
+            <ArrowLeft className="h-5 w-5 mr-2" />
             Back to Brands
           </Button>
-          <div className="flex items-center w-full sm:w-auto">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">{brandName} Models</h1>
+          <div className="flex items-center w-full sm:w-auto text-center">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground">{brandName} Models</h1>
           </div>
         </div>
 
@@ -205,7 +205,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
         {cacheInfo && (
           <div className="mb-4">
             <Alert className="border-green-200 bg-green-50">
-              <AlertDescription className="flex items-center justify-between text-base w-full">
+              <AlertDescription className="flex items-center justify-between text-lg w-full">
           <span className="flex-1">
             <span className="hidden sm:inline">
               Fresh data loaded - {" "}
@@ -223,8 +223,8 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
             })()}
             {hasOldCache && <span className="hidden sm:inline"> • Search available during loading</span>}
           </span>
-          <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-7 px-3 text-sm">
-            <RefreshCw className="h-3 w-3 mr-1" />
+          <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-8 px-3 text-base">
+            <RefreshCw className="h-4 w-4 mr-1" />
             <span className="hidden sm:inline">Refresh</span>
           </Button>
               </AlertDescription>
@@ -236,22 +236,22 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
         <div className="w-full">
           {/* Brand-specific Search */}
           <div className="mb-6 md:mb-8">
-            <label htmlFor="brand-search" className="block text-lg sm:text-xl font-semibold text-foreground mb-4 text-center">
-              Search within {brandName} ({allModels.length} models available)
+            <label htmlFor="brand-search" className="block text-xl sm:text-2xl text-foreground mb-4 text-center">
+              {allModels.length} models found
             </label>
             <div className="flex flex-col sm:flex-row gap-3 w-full">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 sm:h-6 sm:w-6" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6 sm:h-7 sm:w-7" />
                 <Input
                   id="brand-search"
                   placeholder={`Search ${brandName} models instantly, press "Enter" to search`}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  className="pl-12 h-12 sm:h-14 text-base sm:text-lg md:text-xl w-full"
+                  className="pl-12 h-14 sm:h-16 text-lg sm:text-xl md:text-2xl w-full"
                 />
               </div>
-              <Button onClick={handleSearch} className="h-12 sm:h-14 px-6 sm:px-8 font-semibold text-base sm:text-lg w-full sm:w-auto">
+              <Button onClick={handleSearch} className="h-14 sm:h-16 px-6 sm:px-8 font-semibold text-lg sm:text-xl w-full sm:w-auto">
                 Search
               </Button>
             </div>
@@ -259,9 +259,9 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
 
           {/* Results Summary */}
           <div className="mb-4 md:mb-6">
-            <p className="text-muted-foreground text-base sm:text-lg md:text-xl text-center">
+            <p className="text-muted-foreground text-lg sm:text-xl md:text-2xl text-center">
               Showing {filteredModels.length} of {allModels.length} model{filteredModels.length !== 1 ? "s" : ""}
-              {searchQuery && ` matching "${searchQuery}"`} • Instant search from fresh data
+              {searchQuery && ` matching "${searchQuery}"`}
             </p>
           </div>
 
@@ -273,8 +273,8 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
                   <AccordionItem key={series} value={series} className="border rounded-lg">
                     <AccordionTrigger className="px-4 sm:px-6 py-4 sm:py-5 hover:bg-muted/50 rounded-t-lg shadow-sm">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between w-full mr-4 gap-2">
-                        <h3 className="text-xl sm:text-2xl font-bold text-foreground text-left">{series}</h3>
-                        <Badge variant="secondary" className="self-start sm:self-center text-base">
+                        <h3 className="text-2xl sm:text-3xl font-bold text-foreground text-left">{series}</h3>
+                        <Badge variant="secondary" className="self-start sm:self-center text-lg">
                           {models.length} model{models.length !== 1 ? "s" : ""}
                         </Badge>
                       </div>
@@ -284,9 +284,9 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
                         {models.map((model, index) => (
                           <Card key={index} className="border">
                             <CardHeader className="pb-4">
-                              <CardTitle className="text-xl sm:text-2xl">{model.mainModelName}</CardTitle>
+                              <CardTitle className="text-2xl sm:text-3xl">{model.mainModelName}</CardTitle>
                               {model.codename && (
-                                <CardDescription className="text-base sm:text-lg">
+                                <CardDescription className="text-lg sm:text-xl">
                                   Codename: <span className="font-mono font-medium">{model.codename}</span>
                                 </CardDescription>
                               )}
@@ -299,17 +299,17 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
                                     className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 bg-muted/50 rounded-lg border gap-3 sm:gap-4"
                                   >
                                     <div className="flex-1 min-w-0">
-                                      <div className="font-semibold text-base sm:text-lg md:text-xl break-words">
+                                      <div className="font-semibold text-lg sm:text-xl md:text-2xl break-words">
                                         {variant.variantName}
                                       </div>
-                                      <div className="text-muted-foreground text-sm sm:text-base mt-1">
+                                      <div className="text-muted-foreground text-base sm:text-lg mt-1">
                                         Model:{" "}
                                         <span className="font-mono font-medium break-all">{variant.modelNumber}</span>
                                       </div>
                                     </div>
                                     <Badge
                                       variant="outline"
-                                      className="font-mono text-sm sm:text-base self-start sm:self-center flex-shrink-0"
+                                      className="font-mono text-base sm:text-lg self-start sm:self-center flex-shrink-0"
                                     >
                                       {variant.modelNumber}
                                     </Badge>
@@ -328,10 +328,10 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
           ) : (
             <Card>
               <CardContent className="text-center py-12 md:py-16">
-                <h3 className="text-2xl sm:text-3xl font-semibold text-foreground mb-3">
+                <h3 className="text-3xl sm:text-4xl font-semibold text-foreground mb-3">
                   {searchQuery ? "No Results Found" : "No Models Available"}
                 </h3>
-                <p className="text-lg sm:text-xl text-muted-foreground mb-4 md:mb-6">
+                <p className="text-xl sm:text-2xl text-muted-foreground mb-4 md:mb-6">
                   {searchQuery ? `No models found matching "${searchQuery}"` : "No models found for this brand"}
                 </p>
                 {searchQuery && (
@@ -341,7 +341,7 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
                       setSearchQuery("")
                       setSearchInput("")
                     }}
-                    className="w-full sm:w-auto text-base"
+                    className="w-full sm:w-auto text-lg"
                   >
                     Clear Search
                   </Button>

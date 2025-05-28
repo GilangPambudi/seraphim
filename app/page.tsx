@@ -241,24 +241,24 @@ export default function HomePage() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-lg border-destructive/20">
           <CardHeader>
-            <CardTitle className="text-destructive flex items-center">
-              <AlertCircle className="h-5 w-5 mr-2" />
+            <CardTitle className="text-destructive flex items-center text-lg">
+              <AlertCircle className="h-6 w-6 mr-2" />
               Configuration Error
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertCircle className="h-5 w-5" />
+              <AlertDescription className="text-lg">{error}</AlertDescription>
             </Alert>
 
-            <div className="text-sm text-muted-foreground space-y-2">
+            <div className="text-base text-muted-foreground space-y-2">
               <p>
                 <strong>Setup Instructions:</strong>
               </p>
               <ol className="list-decimal list-inside space-y-1">
                 <li>
-                  Create a <code className="bg-muted px-1 rounded">`.env.local`</code> file in your project root
+                  Create a <code className="bg-muted px-1 rounded">.env.local</code> file in your project root
                 </li>
                 <li>
                   Get a GitHub Personal Access Token from{" "}
@@ -279,14 +279,14 @@ export default function HomePage() {
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={handleRetry} variant="outline" className="flex-1">
-                <RefreshCw className="h-4 w-4 mr-2" />
+              <Button onClick={handleRetry} variant="outline" className="flex-1 text-lg">
+                <RefreshCw className="h-5 w-5 mr-2" />
                 Try Again
               </Button>
               <Button
                 onClick={() => window.open("https://github.com/settings/tokens", "_blank")}
                 variant="outline"
-                className="flex-1"
+                className="flex-1 text-lg"
               >
                 Get GitHub Token
               </Button>
@@ -301,11 +301,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <div className="w-[90%] mx-auto px-4 py-8">
         {/* Header */}
-        <div className="text-center mb-8 md:mb-12">
-          <div className="flex flex-col sm:flex-row items-center justify-center mb-6">
+        <div className="text-center mb-4 md:mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center mb-4 md:mb-6 sm:mb-4">
             <div>
-              <h1 className="text-6xl sm:text-4xl md:text-6xl font-bold text-foreground mb-2">SERAPHIM</h1>
-              <p className="text-base sm:text-lg md:text-xl text-muted-foreground">
+              <h1 className="text-6xl sm:text-6xl md:text-7xl font-bold text-foreground mb-2">SERAPHIM</h1>
+              <p className="text-2xl sm:text-xl md:text-2xl text-muted-foreground">
                 Search About Phone Information & Model
               </p>
             </div>
@@ -317,32 +317,32 @@ export default function HomePage() {
           <div className="mb-6">
             <Alert className={isFromCache ? "border-blue-200 bg-blue-50" : "border-green-200 bg-green-50"}>
               <AlertDescription className="flex items-center justify-between">
-          {/* Mobile: Only show "Updated ... ago" */}
-          <span className="text-sm block sm:hidden">
-            {(() => {
-              const ageMinutes = Math.floor((cacheInfo.age || 0) / 1000 / 60)
-              if ((cacheInfo.age || 0) < 60 * 1000) {
-                return "Updated just now"
-              }
-              return `Updated ${ageMinutes} minute${ageMinutes !== 1 ? "s" : ""} ago`
-            })()}
-          </span>
-          {/* Desktop: Original message */}
-          <span className="text-sm hidden sm:block">
-            {isFromCache ? (
-              <>
-                Brands loaded from cache{" "}
-                {Math.round((cacheInfo.age || 0) / 1000 / 60)} minute
-                {Math.round((cacheInfo.age || 0) / 1000 / 60) !== 1 ? "s" : ""} ago
-              </>
-            ) : (
-              "Fresh brands data cached for faster access"
-            )}
-          </span>
-          <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-6 px-2 text-xs">
-            <RefreshCw className="h-3 w-3 mr-1" />
-            Refresh
-          </Button>
+                {/* Mobile: Only show "Updated ... ago" */}
+                <span className="text-base block sm:hidden">
+                  {(() => {
+                    const ageMinutes = Math.floor((cacheInfo.age || 0) / 1000 / 60)
+                    if ((cacheInfo.age || 0) < 60 * 1000) {
+                      return "Updated just now"
+                    }
+                    return `${ageMinutes} minute${ageMinutes !== 1 ? "s" : ""} ago`
+                  })()}
+                </span>
+                {/* Desktop: Original message */}
+                <span className="text-base hidden sm:block">
+                  {isFromCache ? (
+                    <>
+                      Brands loaded from cache{" "}
+                      {Math.round((cacheInfo.age || 0) / 1000 / 60)} minute
+                      {Math.round((cacheInfo.age || 0) / 1000 / 60) !== 1 ? "s" : ""} ago
+                    </>
+                  ) : (
+                    "Fresh brands data cached for faster access"
+                  )}
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-7 px-3 text-sm">
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  Refresh
+                </Button>
               </AlertDescription>
             </Alert>
           </div>
@@ -350,28 +350,33 @@ export default function HomePage() {
 
         {/* Global Search */}
         <div className="mb-8">
-          <label htmlFor="global-search" className="block text-lg font-medium text-foreground mb-3 text-center">
-            Search Brands & Models ({allBrands.length} brands, {totalModels} models available)
+          <label htmlFor="global-search" className="block text-xl font-medium text-foreground mb-3 text-center">
+            <span className="block sm:hidden text-lg">
+              {totalModels} models from {allBrands.length} brands found
+            </span>
+            <span className="hidden sm:block">
+              Search Brands & Models ({allBrands.length} brands, {totalModels} models available)
+            </span>
           </label>
           <div className="flex flex-col sm:flex-row gap-3 mx-auto">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6" />
               <Input
-                id="global-search"
-                placeholder="Search brands, models, codenames, or model numbers..."
-                value={searchInput}
-                onChange={(e) => {
-                  setSearchInput(e.target.value)
-                  // If input is cleared, immediately show all brands
-                  if (e.target.value.trim() === "") {
-                    setSearchQuery("")
-                  }
-                }}
-                onKeyPress={handleKeyPress}
-                className="pl-10 h-12 text-lg"
+              id="global-search"
+              placeholder="Search brands, models, codenames, or model numbers..."
+              value={searchInput}
+              onChange={(e) => {
+                setSearchInput(e.target.value)
+                // If input is cleared, immediately show all brands
+                if (e.target.value.trim() === "") {
+                setSearchQuery("")
+                }
+              }}
+              onKeyPress={handleKeyPress}
+              className="pl-10 h-14 text-xl sm:text-sm placeholder:text-lg"
               />
             </div>
-            <Button onClick={handleSearch} className="h-12 px-6 font-medium">
+            <Button onClick={handleSearch} className="h-14 px-6 font-medium text-lg">
               Search
             </Button>
           </div>
@@ -380,7 +385,7 @@ export default function HomePage() {
         {/* Results Summary */}
         {searchQuery.trim() && (
           <div className="mb-6 text-center">
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground text-lg">
               {searchMode === "models" ? (
                 <>
                   Found {searchResults.length} model{searchResults.length !== 1 ? "s" : ""} matching "{searchQuery}"
@@ -397,7 +402,7 @@ export default function HomePage() {
 
         {/* Content */}
         <div className="w-full">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-6 md:mb-8 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-6 md:mb-8 text-center">
             {searchQuery.trim()
               ? searchMode === "models"
                 ? "Model Search Results"
@@ -415,12 +420,12 @@ export default function HomePage() {
                   onClick={() => handleModelClick(result)}
                 >
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg sm:text-xl flex items-center justify-between">
+                    <CardTitle className="text-xl sm:text-2xl flex items-center justify-between">
                       <span>{result.mainModelName}</span>
-                      <span className="text-sm font-normal text-muted-foreground">{result.brand}</span>
+                      <span className="text-base font-normal text-muted-foreground">{result.brand}</span>
                     </CardTitle>
                     {result.codename && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-base text-muted-foreground">
                         Codename: <span className="font-mono font-medium">{result.codename}</span>
                       </p>
                     )}
@@ -428,12 +433,12 @@ export default function HomePage() {
                   <CardContent>
                     <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div>
-                        <div className="font-medium">{result.variantName}</div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="font-medium text-lg">{result.variantName}</div>
+                        <div className="text-base text-muted-foreground">
                           Model: <span className="font-mono">{result.modelNumber}</span>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="text-lg">
                         View Details
                       </Button>
                     </div>
@@ -453,13 +458,13 @@ export default function HomePage() {
                   onClick={() => handleBrandClick(brand.slug)}
                 >
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base sm:text-lg text-center">{brand.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground text-center">
+                    <CardTitle className="text-lg sm:text-xl text-center">{brand.name}</CardTitle>
+                    <p className="text-base text-muted-foreground text-center">
                       {brand.models.length} model{brand.models.length !== 1 ? "s" : ""}
                     </p>
                   </CardHeader>
                   <CardContent>
-                    <Button className="w-full text-sm sm:text-base">View Models</Button>
+                    <Button className="w-full text-base sm:text-lg">View Models</Button>
                   </CardContent>
                 </Card>
               ))}
@@ -470,9 +475,9 @@ export default function HomePage() {
           {searchQuery.trim() && filteredBrands.length === 0 && searchResults.length === 0 && (
             <Card>
               <CardContent className="text-center py-12 md:py-16">
-                <Search className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4 md:mb-6" />
-                <h3 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">No Results Found</h3>
-                <p className="text-base sm:text-lg text-muted-foreground mb-4 md:mb-6">
+                <Search className="h-16 w-16 sm:h-20 sm:w-20 text-muted-foreground mx-auto mb-4 md:mb-6" />
+                <h3 className="text-2xl sm:text-3xl font-semibold text-foreground mb-2">No Results Found</h3>
+                <p className="text-lg sm:text-xl text-muted-foreground mb-4 md:mb-6">
                   No brands or models found matching "{searchQuery}"
                 </p>
                 <Button
@@ -481,7 +486,7 @@ export default function HomePage() {
                     setSearchQuery("")
                     setSearchInput("")
                   }}
-                  className="w-full sm:w-auto"
+                  className="w-full sm:w-auto text-lg"
                 >
                   Clear Search
                 </Button>
@@ -493,7 +498,7 @@ export default function HomePage() {
           {!searchQuery.trim() && filteredBrands.length === 0 && (
             <Card>
               <CardContent className="text-center py-8 md:py-12">
-                <p className="text-base sm:text-lg text-muted-foreground">No brands available</p>
+                <p className="text-lg sm:text-xl text-muted-foreground">No brands available</p>
               </CardContent>
             </Card>
           )}
@@ -508,7 +513,7 @@ export default function HomePage() {
                 setSearchQuery("")
                 setSearchInput("")
               }}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto text-lg"
             >
               Show All Brands
             </Button>

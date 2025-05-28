@@ -1,4 +1,4 @@
-import { Smartphone, Loader2 } from "lucide-react"
+import { Smartphone } from "lucide-react"
 
 interface LoadingAnimationProps {
   message?: string
