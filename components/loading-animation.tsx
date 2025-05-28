@@ -6,25 +6,26 @@ interface LoadingAnimationProps {
 }
 
 export function LoadingAnimation({ message, brandName }: LoadingAnimationProps) {
-  const isLoadingBrands = brandName === "brands"
+  const isLoadingAll = brandName === "all data"
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center max-w-md mx-auto px-4">
+      <div className="text-center w-[90%] mx-auto px-4">
         {/* Animated Phone Icon */}
         <div className="relative mb-8">
           <Smartphone className="h-16 w-16 text-primary mx-auto animate-pulse" />
-          <Loader2 className="h-6 w-6 text-muted-foreground absolute -bottom-2 -right-2 animate-spin" />
         </div>
 
         {/* Loading Text */}
         <div className="space-y-3">
           <h2 className="text-2xl font-bold text-foreground">
-            {isLoadingBrands ? "Loading Brands" : brandName ? `Loading ${brandName}` : "Loading"}
+            {isLoadingAll ? "Loading All Data" : brandName ? `Loading ${brandName}` : "Loading"}
           </h2>
           <p className="text-muted-foreground">
             {message ||
-              (isLoadingBrands ? "Fetching brand list from repository..." : "Fetching phone models from repository...")}
+              (isLoadingAll
+                ? "Fetching all brands and models from repository..."
+                : "Fetching phone models from repository...")}
           </p>
 
           {/* Progress Dots */}
@@ -36,8 +37,8 @@ export function LoadingAnimation({ message, brandName }: LoadingAnimationProps) 
 
           {/* Cache Info */}
           <p className="text-xs text-muted-foreground mt-4">
-            {isLoadingBrands
-              ? "Brand list will be cached for instant search"
+            {isLoadingAll
+              ? "All data will be cached for instant global search"
               : "Data will be cached locally for faster access"}
           </p>
         </div>

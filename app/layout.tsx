@@ -10,7 +10,7 @@ const figtree = Figtree({
 })
 
 export const metadata: Metadata = {
-  title: "SERAPHIM - Phone Model Search Engine",
+  title: "SERAPHIM - Search About Phone Informations & Models",
   description: "Search About Phone Informations & Models",
 }
 
