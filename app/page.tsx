@@ -241,7 +241,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="max-w-lg border-destructive/20">
           <CardHeader>
-            <CardTitle className="text-destructive flex items-center text-lg">
+            <CardTitle className="text-destructive flex items-center text-xl">
               <AlertCircle className="h-6 w-6 mr-2" />
               Configuration Error
             </CardTitle>
@@ -304,8 +304,8 @@ export default function HomePage() {
         <div className="text-center mb-4 md:mb-8">
           <div className="flex flex-col sm:flex-row items-center justify-center mb-4 md:mb-6 sm:mb-4">
             <div>
-              <h1 className="text-6xl sm:text-6xl md:text-7xl font-bold text-foreground mb-2">SERAPHIM</h1>
-              <p className="text-2xl sm:text-xl md:text-2xl text-muted-foreground">
+              <h1 className="text-6xl sm:text-6xl md:text-6xl font-bold text-foreground mb-2">SERAPHIM</h1>
+              <p className="text-xl sm:text-lg md:text-xl text-muted-foreground">
                 Search About Phone Information & Model
               </p>
             </div>
@@ -350,33 +350,33 @@ export default function HomePage() {
 
         {/* Global Search */}
         <div className="mb-8">
-          <label htmlFor="global-search" className="block text-xl font-medium text-foreground mb-3 text-center">
-            <span className="block sm:hidden text-lg">
+          <label htmlFor="global-search" className="block text-lg sm:text-xl text-foreground mb-4 text-center">
+            <span className="block sm:hidden text-base">
               {totalModels} models from {allBrands.length} brands found
             </span>
             <span className="hidden sm:block">
               Search Brands & Models ({allBrands.length} brands, {totalModels} models available)
             </span>
           </label>
-          <div className="flex flex-col sm:flex-row gap-3 mx-auto">
+          <div className="flex flex-col sm:flex-row gap-3 w-full">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5 sm:h-6 sm:w-6" />
               <Input
-              id="global-search"
-              placeholder="Search brands, models, codenames, or model numbers..."
-              value={searchInput}
-              onChange={(e) => {
-                setSearchInput(e.target.value)
-                // If input is cleared, immediately show all brands
-                if (e.target.value.trim() === "") {
-                setSearchQuery("")
-                }
-              }}
-              onKeyPress={handleKeyPress}
-              className="pl-10 h-14 text-xl sm:text-sm placeholder:text-lg"
+                id="global-search"
+                placeholder="Search brands, models, codenames, or model numbers..."
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value)
+                  // If input is cleared, immediately show all brands
+                  if (e.target.value.trim() === "") {
+                    setSearchQuery("")
+                  }
+                }}
+                onKeyPress={handleKeyPress}
+                className="pl-12 h-12 sm:h-14 text-base sm:text-sm md:text-base w-full"
               />
             </div>
-            <Button onClick={handleSearch} className="h-14 px-6 font-medium text-lg">
+            <Button onClick={handleSearch} className="h-12 sm:h-14 px-4 sm:px-6 font-semibold text-base sm:text-lg w-full sm:w-auto">
               Search
             </Button>
           </div>
@@ -384,8 +384,8 @@ export default function HomePage() {
 
         {/* Results Summary */}
         {searchQuery.trim() && (
-          <div className="mb-6 text-center">
-            <p className="text-muted-foreground text-lg">
+          <div className="mb-4 md:mb-6">
+            <p className="text-muted-foreground text-base sm:text-lg md:text-xl text-center">
               {searchMode === "models" ? (
                 <>
                   Found {searchResults.length} model{searchResults.length !== 1 ? "s" : ""} matching &quot;{searchQuery}&quot;
@@ -402,7 +402,7 @@ export default function HomePage() {
 
         {/* Content */}
         <div className="w-full">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-6 md:mb-8 text-center">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-6 md:mb-8 text-center">
             {searchQuery.trim()
               ? searchMode === "models"
                 ? "Model Search Results"
@@ -422,23 +422,23 @@ export default function HomePage() {
                   <CardHeader className="pb-3">
                     <CardTitle className="text-xl sm:text-2xl flex items-center justify-between">
                       <span>{result.mainModelName}</span>
-                      <span className="text-base font-normal text-muted-foreground">{result.brand}</span>
+                      <span className="text-base sm:text-lg font-normal text-muted-foreground">{result.brand}</span>
                     </CardTitle>
                     {result.codename && (
-                      <p className="text-base text-muted-foreground">
+                      <p className="text-base sm:text-lg text-muted-foreground">
                         Codename: <span className="font-mono font-medium">{result.codename}</span>
                       </p>
                     )}
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center justify-between p-3 sm:p-4 bg-muted/50 rounded-lg">
                       <div>
-                        <div className="font-medium text-lg">{result.variantName}</div>
-                        <div className="text-base text-muted-foreground">
-                          Model: <span className="font-mono">{result.modelNumber}</span>
+                        <div className="font-semibold text-base sm:text-lg md:text-xl">{result.variantName}</div>
+                        <div className="text-sm sm:text-base text-muted-foreground">
+                          Model: <span className="font-mono font-medium">{result.modelNumber}</span>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm" className="text-lg">
+                      <Button variant="outline" size="sm" className="text-sm sm:text-base">
                         View Details
                       </Button>
                     </div>
@@ -458,13 +458,13 @@ export default function HomePage() {
                   onClick={() => handleBrandClick(brand.slug)}
                 >
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg sm:text-xl text-center">{brand.name}</CardTitle>
+                    <CardTitle className="text-2xl font-bold text-center">{brand.name}</CardTitle>
                     <p className="text-base text-muted-foreground text-center">
                       {brand.models.length} model{brand.models.length !== 1 ? "s" : ""}
                     </p>
                   </CardHeader>
                   <CardContent>
-                    <Button className="w-full text-base sm:text-lg">View Models</Button>
+                    <Button className="w-full text-base">View Models</Button>
                   </CardContent>
                 </Card>
               ))}
@@ -475,8 +475,8 @@ export default function HomePage() {
           {searchQuery.trim() && filteredBrands.length === 0 && searchResults.length === 0 && (
             <Card>
               <CardContent className="text-center py-12 md:py-16">
-                <Search className="h-16 w-16 sm:h-20 sm:w-20 text-muted-foreground mx-auto mb-4 md:mb-6" />
-                <h3 className="text-2xl sm:text-3xl font-semibold text-foreground mb-2">No Results Found</h3>
+                <Search className="h-12 w-12 sm:h-16 sm:w-16 text-muted-foreground mx-auto mb-4 md:mb-6" />
+                <h3 className="text-2xl sm:text-3xl font-semibold text-foreground mb-3">No Results Found</h3>
                 <p className="text-lg sm:text-xl text-muted-foreground mb-4 md:mb-6">
                   No brands or models found matching &quot;{searchQuery}&quot;
                 </p>
@@ -486,7 +486,7 @@ export default function HomePage() {
                     setSearchQuery("")
                     setSearchInput("")
                   }}
-                  className="w-full sm:w-auto text-lg"
+                  className="w-full sm:w-auto text-base"
                 >
                   Clear Search
                 </Button>
@@ -498,7 +498,7 @@ export default function HomePage() {
           {!searchQuery.trim() && filteredBrands.length === 0 && (
             <Card>
               <CardContent className="text-center py-8 md:py-12">
-                <p className="text-lg sm:text-xl text-muted-foreground">No brands available</p>
+                <p className="text-base sm:text-lg text-muted-foreground">No brands available</p>
               </CardContent>
             </Card>
           )}
@@ -513,7 +513,7 @@ export default function HomePage() {
                 setSearchQuery("")
                 setSearchInput("")
               }}
-              className="w-full sm:w-auto text-lg"
+              className="w-full sm:w-auto text-base"
             >
               Show All Brands
             </Button>
