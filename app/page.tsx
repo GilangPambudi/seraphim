@@ -40,7 +40,6 @@ export default function HomePage() {
       try {
         console.log("Loading all brands and models...")
 
-        const allBrandsCacheKey = "all_brands_metadata" // Cache key for just brand metadata
         const allModelsGlobalCacheKey = "all_models_global_data" // Cache key for all models combined
 
         // First, check if global models data is already in cache
