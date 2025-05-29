@@ -40,125 +40,128 @@ export default function HomePage() {
       try {
         console.log("Loading all brands and models...")
 
-        const cacheKey = "all_brands_with_models"
+        const allBrandsCacheKey = "all_brands_metadata" // Cache key for just brand metadata
+        const allModelsGlobalCacheKey = "all_models_global_data" // Cache key for all models combined
 
-        // Check cache first
-        const cachedData = cacheManager.get<Brand[]>(cacheKey)
+        // First, check if global models data is already in cache
+        const cachedGlobalModels = cacheManager.get<Brand[]>(allModelsGlobalCacheKey);
 
-        if (cachedData) {
-          console.log("Loading all data from cache")
-          setLoadingMessage("Loading from cache...")
-          setAllBrands(cachedData)
-          setFilteredBrands(cachedData)
-          setIsFromCache(true)
+        if (cachedGlobalModels) {
+          console.log("Loading all data (brands and models) from global cache");
+          setLoadingMessage("Loading all data from cache...");
+          setAllBrands(cachedGlobalModels);
+          setFilteredBrands(cachedGlobalModels);
+          setIsFromCache(true);
 
-          const info = cacheManager.getCacheInfo(cacheKey)
-          setCacheInfo(info)
+          const info = cacheManager.getCacheInfo(allModelsGlobalCacheKey);
+          setCacheInfo(info);
 
-          // Simulate brief loading for better UX
-          await new Promise((resolve) => setTimeout(resolve, 500))
+          await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate brief loading for better UX
         } else {
-          console.log("Fetching fresh data for all brands")
-          setLoadingMessage("Fetching brands from repository...")
-          setIsFromCache(false)
+          console.log("Fetching fresh data for all brands and models");
+          setLoadingMessage("Fetching brands list from repository...");
+          setIsFromCache(false);
 
-          const files = await fetchBrandFiles()
+          const files = await fetchBrandFiles();
 
           if (files.length === 0) {
-            setError("No brand files found in the repository")
-            return
+            setError("No brand files found in the repository");
+            return;
           }
 
-          setLoadingMessage("Processing brand information...")
-          await new Promise((resolve) => setTimeout(resolve, 300))
+          setLoadingMessage("Processing brand information...");
+          await new Promise((resolve) => setTimeout(resolve, 300)); // Brief pause for UX
 
-          const brandsWithModels: Brand[] = []
+          const brandsWithModels: Brand[] = [];
 
-          // Process each brand and fetch its models
+          // Fetch models for each brand and cache them individually
           for (let i = 0; i < files.length; i++) {
-            const file = files[i]
-            const { name, slug } = parseBrandName(file.name)
+            const file = files[i];
+            const { name, slug } = parseBrandName(file.name);
+            const brandModelsCacheKey = `brand_${slug}`; // Individual cache key for each brand's models
 
-            setLoadingMessage(`Loading ${name} models... (${i + 1}/${files.length})`)
+            setLoadingMessage(`Loading ${name} models... (${i + 1}/${files.length})`);
 
             try {
-              const content = await fetchBrandMarkdown(file.name)
-              const models = parseMarkdownContent(content)
+              const content = await fetchBrandMarkdown(file.name);
+              const models = parseMarkdownContent(content);
 
-              brandsWithModels.push({
+              brandsWithModels.push({ //
                 name,
                 slug,
                 filename: file.name,
                 models,
-              })
+              });
 
-              console.log(`Loaded ${models.length} models for ${name}`)
+              // Cache individual brand's models
+              cacheManager.set(brandModelsCacheKey, models);
+              console.log(`Loaded and cached ${models.length} models for ${name}`);
             } catch (error) {
-              console.error(`Failed to load models for ${name}:`, error)
+              console.error(`Failed to load models for ${name}:`, error);
               // Add brand without models if fetch fails
               brandsWithModels.push({
                 name,
                 slug,
                 filename: file.name,
                 models: [],
-              })
+              });
             }
 
             // Brief pause between requests to avoid overwhelming the API
-            await new Promise((resolve) => setTimeout(resolve, 100))
+            await new Promise((resolve) => setTimeout(resolve, 100));
           }
 
-          brandsWithModels.sort((a, b) => a.name.localeCompare(b.name))
+          brandsWithModels.sort((a, b) => a.name.localeCompare(b.name));
 
-          console.log("All brands and models loaded:", brandsWithModels.length)
+          console.log("All brands and their models loaded:", brandsWithModels.length);
 
-          // Cache all the data
-          cacheManager.forceSet(cacheKey, brandsWithModels)
-          console.log("All data cached")
+          // Cache the combined all brands data globally
+          cacheManager.set(allModelsGlobalCacheKey, brandsWithModels);
+          console.log("All global data cached.");
 
-          setAllBrands(brandsWithModels)
-          setFilteredBrands(brandsWithModels)
+          setAllBrands(brandsWithModels);
+          setFilteredBrands(brandsWithModels);
 
-          const info = cacheManager.getCacheInfo(cacheKey)
-          setCacheInfo(info)
+          const info = cacheManager.getCacheInfo(allModelsGlobalCacheKey);
+          setCacheInfo(info);
         }
       } catch (error) {
-        console.error("Error loading data:", error)
-        const errorMessage = error instanceof Error ? error.message : "Unknown error"
+        console.error("Error loading data:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
 
         if (errorMessage.includes("GitHub token not configured")) {
-          setError("GitHub token not configured. Please add GITHUB_TOKEN to your .env.local file.")
+          setError("GitHub token not configured. Please add GITHUB_TOKEN to your .env.local file.");
         } else if (errorMessage.includes("rate limit")) {
-          setError("GitHub API rate limit exceeded. Please try again later or check your token.")
+          setError("GitHub API rate limit exceeded. Please try again later or check your token.");
         } else if (errorMessage.includes("404")) {
-          setError("Repository not found. Please verify the repository URL is correct.")
+          setError("Repository not found. Please verify the repository URL is correct.");
         } else {
-          setError(`Failed to load data: ${errorMessage}`)
+          setError(`Failed to load data: ${errorMessage}`);
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    loadAllData()
-  }, [retryCount])
+    loadAllData();
+  }, [retryCount]);
 
-  // Handle search
+  // Rest of the component logic remains largely the same
+  // Handle search logic using `allBrands` or `cachedGlobalModels`
   const handleSearch = () => {
-    const trimmedQuery = searchInput.trim()
-    setSearchQuery(trimmedQuery)
+    const trimmedQuery = searchInput.trim();
+    setSearchQuery(trimmedQuery);
 
     if (!trimmedQuery) {
-      setSearchMode("brands")
-      setFilteredBrands(allBrands)
-      setSearchResults([])
-      return
+      setSearchMode("brands");
+      setFilteredBrands(allBrands);
+      setSearchResults([]);
+      return;
     }
 
-    // Search in models first
-    const modelResults: SearchResult[] = []
+    const modelResults: SearchResult[] = [];
     allBrands.forEach((brand) => {
-      const matchingModels = searchModels(brand.models, trimmedQuery)
+      const matchingModels = searchModels(brand.models, trimmedQuery);
       matchingModels.forEach((model) => {
         model.variants.forEach((variant) => {
           modelResults.push({
@@ -168,69 +171,68 @@ export default function HomePage() {
             modelNumber: variant.modelNumber,
             variantName: variant.variantName,
             codename: model.codename,
-          })
-        })
-      })
-    })
+          });
+        });
+      });
+    });
 
-    // Search in brands
     const brandResults = allBrands.filter(
       (brand) =>
         brand.name.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
         brand.slug.toLowerCase().includes(trimmedQuery.toLowerCase()),
-    )
+    );
 
     if (modelResults.length > 0) {
-      setSearchMode("models")
-      setSearchResults(modelResults)
-      setFilteredBrands([])
+      setSearchMode("models");
+      setSearchResults(modelResults);
+      setFilteredBrands([]);
     } else if (brandResults.length > 0) {
-      setSearchMode("brands")
-      setFilteredBrands(brandResults)
-      setSearchResults([])
+      setSearchMode("brands");
+      setFilteredBrands(brandResults);
+      setSearchResults([]);
     } else {
-      setSearchMode("brands")
-      setFilteredBrands([])
-      setSearchResults([])
+      setSearchMode("brands");
+      setFilteredBrands([]);
+      setSearchResults([]);
     }
-  }
+  };
 
-  // Filter on input change
   useEffect(() => {
-    const trimmedQuery = searchQuery.trim()
+    const trimmedQuery = searchQuery.trim();
     if (!trimmedQuery) {
-      setSearchMode("brands")
-      setFilteredBrands(allBrands)
-      setSearchResults([])
+      setSearchMode("brands");
+      setFilteredBrands(allBrands);
+      setSearchResults([]);
     }
-  }, [allBrands, searchQuery])
+  }, [allBrands, searchQuery]);
 
   const handleBrandClick = (brandSlug: string) => {
-    router.push(`/${brandSlug}`)
-  }
+    router.push(`/${brandSlug}`);
+  };
 
   const handleRetry = () => {
-    setRetryCount((prev) => prev + 1)
-  }
+    setRetryCount((prev) => prev + 1);
+  };
 
-  // Handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSearch()
+      handleSearch();
     }
-  }
+  };
 
-  // Clear cache and reload
   const handleRefreshData = () => {
-    cacheManager.delete("all_brands_with_models")
-    setRetryCount((prev) => prev + 1)
-  }
+    // Clear all related caches to force a full refresh
+    cacheManager.delete("all_brands_metadata");
+    cacheManager.delete("all_models_global_data");
+    // Also clear individual brand caches if they exist
+    allBrands.forEach(brand => cacheManager.delete(`brand_${brand.slug}`));
+    setRetryCount((prev) => prev + 1);
+  };
 
-  // Calculate total models
-  const totalModels = allBrands.reduce((total, brand) => total + brand.models.length, 0)
+  const totalModels = allBrands.reduce((total, brand) => total + brand.models.length, 0);
 
   if (loading) {
-    return <LoadingAnimation message={loadingMessage} brandName="all data" />
+    return <LoadingAnimation message={loadingMessage} brandName="all data" />;
   }
 
   if (error) {
@@ -291,7 +293,7 @@ export default function HomePage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -317,11 +319,11 @@ export default function HomePage() {
                 {/* Mobile: Only show "Updated ... ago" */}
                 <span className="text-base block sm:hidden">
                   {(() => {
-                    const ageMinutes = Math.floor((cacheInfo.age || 0) / 1000 / 60)
+                    const ageMinutes = Math.floor((cacheInfo.age || 0) / 1000 / 60);
                     if ((cacheInfo.age || 0) < 60 * 1000) {
-                      return "Updated just now"
+                      return "Updated just now";
                     }
-                    return `${ageMinutes} minute${ageMinutes !== 1 ? "s" : ""} ago`
+                    return `${ageMinutes} minute${ageMinutes !== 1 ? "s" : ""} ago`;
                   })()}
                 </span>
                 {/* Desktop: Original message */}
@@ -363,10 +365,9 @@ export default function HomePage() {
                 placeholder="Search brands, models, codenames, or model numbers..."
                 value={searchInput}
                 onChange={(e) => {
-                  setSearchInput(e.target.value)
-                  // If input is cleared, immediately show all brands
+                  setSearchInput(e.target.value);
                   if (e.target.value.trim() === "") {
-                    setSearchQuery("")
+                    setSearchQuery("");
                   }
                 }}
                 onKeyPress={handleKeyPress}
@@ -476,8 +477,8 @@ export default function HomePage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setSearchQuery("")
-                    setSearchInput("")
+                    setSearchQuery("");
+                    setSearchInput("");
                   }}
                   className="w-full sm:w-auto text-base"
                 >
@@ -503,8 +504,8 @@ export default function HomePage() {
             <Button
               variant="outline"
               onClick={() => {
-                setSearchQuery("")
-                setSearchInput("")
+                setSearchQuery("");
+                setSearchInput("");
               }}
               className="w-full sm:w-auto text-base"
             >
@@ -515,5 +516,5 @@ export default function HomePage() {
       </div>
       <Footer />
     </div>
-  )
+  );
 }

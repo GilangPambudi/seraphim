@@ -1,3 +1,4 @@
+// app/[brandSlug]/page.tsx
 "use client"
 
 import type React from "react"
@@ -12,8 +13,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { LoadingAnimation } from "@/components/loading-animation"
-import { fetchBrandFiles, fetchBrandMarkdown } from "@/lib/api-client"
-import { parseBrandName, parseMarkdownContent, searchModels } from "@/lib/data-parser"
+import { fetchBrandFiles, fetchBrandMarkdown } from "@/lib/api-client" // Keep for filename parsing
+import { parseBrandName, parseMarkdownContent, searchModels } from "@/lib/data-parser" // Keep for parsing
 import { cacheManager } from "@/lib/cache-manager"
 import type { PhoneModel } from "@/types/phone-models"
 import Footer from "@/components/footer"
@@ -36,126 +37,128 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
   const [loadingMessage, setLoadingMessage] = useState("")
   const [error, setError] = useState("")
   const [cacheInfo, setCacheInfo] = useState<{ age?: number; expiresIn?: number } | null>(null)
-  const [hasOldCache, setHasOldCache] = useState(false)
+  const [isFromCache, setIsFromCache] = useState(false)
 
   useEffect(() => {
     async function loadBrandData() {
       setLoading(true)
       setError("")
-      setLoadingMessage("Initializing...")
+      setLoadingMessage("Loading brand data...")
 
       try {
-        console.log("Loading brand data for:", brandSlug)
+        const brandModelsCacheKey = `brand_${brandSlug}`
 
-        // First, get brand name from files list
-        setLoadingMessage("Fetching brand information...")
-        const files = await fetchBrandFiles()
-        const matchingFile = files.find((file) => {
-          const { slug } = parseBrandName(file.name)
-          return slug === brandSlug
-        })
+        // Try to get models from cache
+        const cachedModels = cacheManager.get<PhoneModel[]>(brandModelsCacheKey);
 
-        if (!matchingFile) {
-          setError(`Brand "${brandSlug}" not found`)
-          return
+        if (cachedModels) {
+          console.log(`Loading models for ${brandSlug} from cache.`);
+          setLoadingMessage("Loading from cache...");
+          setAllModels(cachedModels);
+          setFilteredModels(cachedModels);
+          setIsFromCache(true);
+
+          // Retrieve brand name (might still need to fetch brand files to get the display name)
+          const files = await fetchBrandFiles();
+          const matchingFile = files.find((file) => {
+            const { slug } = parseBrandName(file.name);
+            return slug === brandSlug;
+          });
+          if (matchingFile) {
+            setBrandName(parseBrandName(matchingFile.name).name);
+          }
+
+          const info = cacheManager.getCacheInfo(brandModelsCacheKey);
+          setCacheInfo(info);
+          setLoading(false);
+        } else {
+          // Fallback: If for some reason the specific brand's models are not in cache,
+          // fetch them now. This might happen if the user navigates directly to a brand page.
+          console.log(`Cache miss for ${brandSlug}, fetching fresh data.`);
+          setLoadingMessage(`Fetching ${brandSlug} models...`);
+
+          const files = await fetchBrandFiles();
+          const matchingFile = files.find((file) => {
+            const { slug } = parseBrandName(file.name);
+            return slug === brandSlug;
+          });
+
+          if (!matchingFile) {
+            setError(`Brand "${brandSlug}" not found`);
+            return;
+          }
+
+          const { name } = parseBrandName(matchingFile.name);
+          setBrandName(name);
+
+          const content = await fetchBrandMarkdown(matchingFile.name);
+          if (!content) {
+            setError("Failed to load brand data - empty content");
+            return;
+          }
+
+          const models = parseMarkdownContent(content);
+          cacheManager.set(brandModelsCacheKey, models); // Cache it for future direct access
+          console.log(`Fetched and cached ${models.length} models for ${brandSlug}.`);
+
+          setAllModels(models);
+          setFilteredModels(models);
+          setIsFromCache(false);
+
+          const info = cacheManager.getCacheInfo(brandModelsCacheKey);
+          setCacheInfo(info);
+          setLoading(false);
         }
-
-        const { name } = parseBrandName(matchingFile.name)
-        setBrandName(name)
-
-        const cacheKey = `brand_${brandSlug}`
-
-        // Check if we have old cached data for instant search while loading fresh data
-        const oldCachedData = cacheManager.getForSearch<PhoneModel[]>(cacheKey)
-        if (oldCachedData) {
-          console.log("Found old cache data, using for instant search while fetching fresh data")
-          setHasOldCache(true)
-          // Set old data temporarily for search functionality
-          setAllModels(oldCachedData)
-          setFilteredModels(oldCachedData)
-        }
-
-        // ALWAYS fetch fresh data when opening View Models page
-        console.log("Fetching fresh data for:", brandSlug)
-        setLoadingMessage(`Fetching latest ${name} models...`)
-
-        const content = await fetchBrandMarkdown(matchingFile.name)
-        if (!content) {
-          setError("Failed to load brand data - empty content")
-          return
-        }
-
-        setLoadingMessage("Parsing phone models...")
-        await new Promise((resolve) => setTimeout(resolve, 300)) // Brief pause for UX
-
-        const models = parseMarkdownContent(content)
-        console.log("Parsed fresh models:", models.length)
-
-        // Force update cache with fresh data (overwrites any existing cache)
-        cacheManager.forceSet(cacheKey, models)
-        console.log("Fresh data cached for:", brandSlug)
-
-        // Update state with fresh data
-        setAllModels(models)
-        setFilteredModels(models)
-        setHasOldCache(false)
-
-        const info = cacheManager.getCacheInfo(cacheKey)
-        setCacheInfo(info)
       } catch (err) {
-        console.error("Error loading brand data:", err)
-        setError(err instanceof Error ? err.message : "Failed to load brand data")
-      } finally {
-        setLoading(false)
+        console.error("Error loading brand data:", err);
+        setError(err instanceof Error ? err.message : "Failed to load brand data");
+        setLoading(false);
       }
     }
 
-    loadBrandData()
-  }, [brandSlug])
+    loadBrandData();
+  }, [brandSlug]);
 
-  // Filter models based on search query (works with cached data for instant search)
+  // Filter models based on search query
   useEffect(() => {
     if (searchQuery.trim()) {
-      console.log("Searching in data:", searchQuery)
-      const filtered = searchModels(allModels, searchQuery)
-      setFilteredModels(filtered)
+      const filtered = searchModels(allModels, searchQuery);
+      setFilteredModels(filtered);
     } else {
-      setFilteredModels(allModels)
+      setFilteredModels(allModels);
     }
-  }, [allModels, searchQuery])
+  }, [allModels, searchQuery]);
 
-  // Handle search
   const handleSearch = () => {
-    setSearchQuery(searchInput)
-  }
+    setSearchQuery(searchInput);
+  };
 
-  // Handle Enter key press
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSearch()
+      handleSearch();
     }
-  }
+  };
 
-  // Manual refresh (force fetch fresh data)
   const handleRefreshData = () => {
-    window.location.reload()
-  }
+    // Clear only this brand's cache to force a refresh for it
+    cacheManager.delete(`brand_${brandSlug}`);
+    window.location.reload();
+  };
 
-  // Group models by series
   const groupedModels = filteredModels.reduce(
     (groups, model) => {
-      const series = model.series || "Other Models"
+      const series = model.series || "Other Models";
       if (!groups[series]) {
-        groups[series] = []
+        groups[series] = [];
       }
-      groups[series].push(model)
-      return groups
+      groups[series].push(model);
+      return groups;
     },
     {} as Record<string, PhoneModel[]>,
-  )
+  );
 
   if (loading) {
-    return <LoadingAnimation message={loadingMessage} brandName={brandName} />
+    return <LoadingAnimation message={loadingMessage} brandName={brandName || "a brand"} />;
   }
 
   if (error) {
@@ -185,13 +188,13 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-background">
       <div className="w-[90%] mx-auto px-4 py-6 md:py-8">
-        
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 md:mb-8 gap-4">
           <Button variant="outline" onClick={() => router.push("/")} className="w-full sm:w-auto text-base">
@@ -206,29 +209,28 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
         {/* Data Status */}
         {cacheInfo && (
           <div className="mb-4">
-            <Alert className="border-green-200 bg-green-50">
+            <Alert className={isFromCache ? "border-blue-200 bg-blue-50" : "border-green-200 bg-green-50"}>
               <AlertDescription className="flex items-center justify-between text-base w-full">
-          <span className="flex-1">
-            <span className="hidden sm:inline">
-              Fresh data loaded - {" "}
-            </span>
-            {(() => {
-              const age = cacheInfo.age || 0
-              if (age < 60_000) return "Updated just now"
-              const seconds = Math.round(age / 1000)
-              const minutes = Math.floor(seconds / 60)
-              if (minutes < 60) return `Updated ${minutes} minute${minutes > 1 ? "s" : ""} ago`
-              const hours = Math.floor(minutes / 60)
-              if (hours < 24) return `Updated ${hours} hour${hours > 1 ? "s" : ""} ago`
-              const days = Math.floor(hours / 24)
-              return `Updated ${days} day${days > 1 ? "s" : ""} ago`
-            })()}
-            {hasOldCache && <span className="hidden sm:inline"> • Search available during loading</span>}
-          </span>
-          <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-8 px-3 text-sm">
-            <RefreshCw className="h-4 w-4 mr-1" />
-            <span className="hidden sm:inline">Refresh</span>
-          </Button>
+                <span className="flex-1">
+                  <span className="hidden sm:inline">
+                    {isFromCache ? "Data loaded from cache" : "Fresh data loaded"} -{" "}
+                  </span>
+                  {(() => {
+                    const age = cacheInfo.age || 0;
+                    if (age < 60_000) return "Updated just now";
+                    const seconds = Math.round(age / 1000);
+                    const minutes = Math.floor(seconds / 60);
+                    if (minutes < 60) return `Updated ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+                    const hours = Math.floor(minutes / 60);
+                    if (hours < 24) return `Updated ${hours} hour${hours > 1 ? "s" : ""} ago`;
+                    const days = Math.floor(hours / 24);
+                    return `Updated ${days} day${days > 1 ? "s" : ""} ago`;
+                  })()}
+                </span>
+                <Button variant="ghost" size="sm" onClick={handleRefreshData} className="h-8 px-3 text-sm">
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Refresh</span>
+                </Button>
               </AlertDescription>
             </Alert>
           </div>
@@ -340,8 +342,8 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setSearchQuery("")
-                      setSearchInput("")
+                      setSearchQuery("");
+                      setSearchInput("");
                     }}
                     className="w-full sm:w-auto text-base"
                   >
@@ -355,5 +357,5 @@ export default function BrandDetailPage({ params }: BrandDetailPageProps) {
       </div>
       <Footer />
     </div>
-  )
+  );
 }
