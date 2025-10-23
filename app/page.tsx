@@ -30,6 +30,9 @@ export default function HomePage() {
   const [retryCount, setRetryCount] = useState(0)
   const [isFromCache, setIsFromCache] = useState(false)
   const [cacheInfo, setCacheInfo] = useState<{ age?: number; expiresIn?: number } | null>(null)
+  const [isModelsLoading, setIsModelsLoading] = useState(false)
+  const [modelsLoadedCount, setModelsLoadedCount] = useState(0)
+  const [totalBrands, setTotalBrands] = useState(0)
 
   useEffect(() => {
     async function loadAllData() {
@@ -41,6 +44,7 @@ export default function HomePage() {
         console.log("Loading all brands and models...")
 
         const allModelsGlobalCacheKey = "all_models_global_data" // Cache key for all models combined
+        const allBrandsMetadataKey = "all_brands_metadata" // Cache key for brands list only
 
         // First, check if global models data is already in cache
         const cachedGlobalModels = cacheManager.get<Brand[]>(allModelsGlobalCacheKey);
@@ -57,7 +61,7 @@ export default function HomePage() {
 
           await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate brief loading for better UX
         } else {
-          console.log("Fetching fresh data for all brands and models");
+          console.log("Fetching fresh data for all brands, then models in background");
           setLoadingMessage("Fetching brands list from repository...");
           setIsFromCache(false);
 
@@ -68,61 +72,61 @@ export default function HomePage() {
             return;
           }
 
-          setLoadingMessage("Processing brand information...");
-          await new Promise((resolve) => setTimeout(resolve, 300)); // Brief pause for UX
+          // Phase 1: build and show brand list first
+          const brandMetadata: Brand[] = files
+            .map((file) => {
+              const { name, slug } = parseBrandName(file.name);
+              return { name, slug, filename: file.name, models: [] } as Brand;
+            })
+            .sort((a, b) => a.name.localeCompare(b.name));
 
-          const brandsWithModels: Brand[] = [];
+          // Cache metadata for quick subsequent loads if needed
+          cacheManager.set(allBrandsMetadataKey, brandMetadata);
 
-          // Fetch models for each brand and cache them individually
-          for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const { name, slug } = parseBrandName(file.name);
-            const brandModelsCacheKey = `brand_${slug}`; // Individual cache key for each brand's models
+          setAllBrands(brandMetadata);
+          setFilteredBrands(brandMetadata);
+          setTotalBrands(brandMetadata.length);
 
-            setLoadingMessage(`Loading ${name} models... (${i + 1}/${files.length})`);
+          // Render immediately with brands only
+          setLoading(false);
 
-            try {
-              const content = await fetchBrandMarkdown(file.name);
-              const models = parseMarkdownContent(content);
+          // Phase 2: fetch models in background with progress
+          setIsModelsLoading(true);
+          setModelsLoadedCount(0);
 
-              brandsWithModels.push({ //
-                name,
-                slug,
-                filename: file.name,
-                models,
-              });
+          const resultsMap = new Map<string, Brand>();
 
-              // Cache individual brand's models
-              cacheManager.set(brandModelsCacheKey, models);
-              console.log(`Loaded and cached ${models.length} models for ${name}`);
-            } catch (error) {
-              console.error(`Failed to load models for ${name}:`, error);
-              // Add brand without models if fetch fails
-              brandsWithModels.push({
-                name,
-                slug,
-                filename: file.name,
-                models: [],
-              });
-            }
+          await Promise.allSettled(
+            brandMetadata.map(async (brand, index) => {
+              const brandModelsCacheKey = `brand_${brand.slug}`;
+              try {
+                const content = await fetchBrandMarkdown(brand.filename);
+                const models = parseMarkdownContent(content);
 
-            // Brief pause between requests to avoid overwhelming the API
-            await new Promise((resolve) => setTimeout(resolve, 100));
-          }
+                // Update per-brand cache and state
+                cacheManager.set(brandModelsCacheKey, models);
+                resultsMap.set(brand.slug, { ...brand, models });
 
-          brandsWithModels.sort((a, b) => a.name.localeCompare(b.name));
+                setAllBrands((prev) =>
+                  prev.map((b) => (b.slug === brand.slug ? { ...b, models } : b)),
+                );
+              } catch (error) {
+                console.error(`Failed to load models for ${brand.name}:`, error);
+                resultsMap.set(brand.slug, { ...brand, models: [] });
+              } finally {
+                setModelsLoadedCount((c) => c + 1);
+              }
+            }),
+          );
 
-          console.log("All brands and their models loaded:", brandsWithModels.length);
-
-          // Cache the combined all brands data globally
-          cacheManager.set(allModelsGlobalCacheKey, brandsWithModels);
+          // After background load completes, cache global dataset
+          const completedBrands = brandMetadata.map((b) => resultsMap.get(b.slug) ?? b);
+          cacheManager.set(allModelsGlobalCacheKey, completedBrands);
           console.log("All global data cached.");
-
-          setAllBrands(brandsWithModels);
-          setFilteredBrands(brandsWithModels);
 
           const info = cacheManager.getCacheInfo(allModelsGlobalCacheKey);
           setCacheInfo(info);
+          setIsModelsLoading(false);
         }
       } catch (error) {
         console.error("Error loading data:", error);
@@ -341,6 +345,17 @@ export default function HomePage() {
                   <RefreshCw className="h-4 w-4 mr-1" />
                   Refresh
                 </Button>
+              </AlertDescription>
+            </Alert>
+          </div>
+        )}
+
+        {/* Background Models Loading Status */}
+        {isModelsLoading && (
+          <div className="mb-4">
+            <Alert className="border-blue-200 bg-blue-50">
+              <AlertDescription className="text-base">
+                Loading models in background: {modelsLoadedCount}/{totalBrands}. You can already browse brands.
               </AlertDescription>
             </Alert>
           </div>
