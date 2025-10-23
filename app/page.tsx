@@ -97,7 +97,7 @@ export default function HomePage() {
           const resultsMap = new Map<string, Brand>();
 
           await Promise.allSettled(
-            brandMetadata.map(async (brand, index) => {
+            brandMetadata.map(async (brand) => {
               const brandModelsCacheKey = `brand_${brand.slug}`;
               try {
                 const content = await fetchBrandMarkdown(brand.filename);
