@@ -140,3 +140,27 @@
     transform: scaleX(1);
   }
 }
+
+/* Dark/light circular reveal from the top-right (View Transition API) */
+::view-transition-old(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation: theme-circle-reveal 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes theme-circle-reveal {
+  from {
+    clip-path: circle(0 at var(--theme-reveal-x, 100%) var(--theme-reveal-y, 0));
+  }
+  to {
+    clip-path: circle(150% at var(--theme-reveal-x, 100%) var(--theme-reveal-y, 0));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
