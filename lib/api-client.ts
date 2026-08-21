@@ -1,4 +1,9 @@
 import type { GitHubFile } from "@/types/phone-models"
+import type { PhoneModel } from "@/types/phone-models"
+import { cacheManager } from "@/lib/cache-manager"
+import { parseMarkdownContent } from "@/lib/data-parser"
+
+const brandModelRequests = new Map<string, Promise<PhoneModel[]>>()
 
 export async function fetchBrandFiles(): Promise<GitHubFile[]> {
   try {
@@ -42,4 +47,24 @@ export async function fetchBrandMarkdown(filename: string): Promise<string> {
     console.error(`Error fetching ${filename}:`, error)
     throw error
   }
+}
+
+export function loadBrandModels(filename: string, slug: string): Promise<PhoneModel[]> {
+  const cachedModels = cacheManager.get<PhoneModel[]>(`brand_${slug}`)
+  if (cachedModels) return Promise.resolve(cachedModels)
+
+  const existingRequest = brandModelRequests.get(slug)
+  if (existingRequest) return existingRequest
+
+  const request = fetchBrandMarkdown(filename)
+    .then((content) => {
+      if (!content) throw new Error("Failed to load brand data - empty content")
+      const models = parseMarkdownContent(content)
+      cacheManager.set(`brand_${slug}`, models)
+      return models
+    })
+    .finally(() => brandModelRequests.delete(slug))
+
+  brandModelRequests.set(slug, request)
+  return request
 }
