@@ -145,7 +145,7 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
   if (error) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-6">
-        <section className="w-full max-w-lg border border-destructive/50 bg-card p-5">
+        <section className="w-full max-w-lg rounded-2xl border border-destructive/50 bg-card p-5">
           <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.08em] text-destructive">
             <AlertCircle className="size-4" aria-hidden="true" />
             <h1>Unable to load brand data</h1>
@@ -168,13 +168,13 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
   return (
     <div className="min-h-dvh bg-background">
       <header className="border-b border-border bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl items-center gap-3 px-4 py-3 md:gap-4 md:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-screen-xl items-center gap-4 px-4 py-4 md:gap-5 md:px-6 lg:px-8">
           <Button type="button" variant="ghost" size="sm" onClick={handleBack} className="shrink-0">
             <ArrowLeft aria-hidden="true" />
             <span className="hidden sm:inline">Brands</span>
           </Button>
           <div className="min-w-0 flex-1 border-l border-border pl-3 md:pl-4">
-            <p className="truncate text-[10px] uppercase tracking-[0.12em] text-muted-foreground">Brand index / {brandSlug}</p>
+            <p className="truncate text-xs uppercase tracking-[0.12em] text-muted-foreground">Brand index / {brandSlug}</p>
             <h1 className="truncate text-base font-semibold text-foreground">{brandName || brandSlug}</h1>
           </div>
           <div className="flex shrink-0 items-center gap-3">
@@ -186,13 +186,13 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-screen-xl px-4 py-6 md:px-6 md:py-8">
-        <section className="border border-border bg-card">
-          <div className="border-b border-border px-4 py-4 md:px-5">
-            <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Brand search</p>
+      <main className="mx-auto w-full max-w-screen-xl px-4 py-8 md:px-6 md:py-12">
+        <section className="rounded-2xl overflow-hidden border border-border bg-card">
+          <div className="border-b border-border px-5 py-5 md:px-6">
+            <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">Brand search</p>
             <h2 className="mt-1 text-lg font-semibold text-foreground">Find a model in {brandName || brandSlug}</h2>
           </div>
-          <div className="p-4 md:p-5">
+          <div className="p-5 md:p-6">
             <label htmlFor="brand-search" className="mb-2 block text-xs font-medium text-foreground">
               Model name, codename, variant, or model number
             </label>
@@ -214,11 +214,11 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
           </div>
         </section>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-3 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border py-4 text-xs text-muted-foreground">
           <p>
             Showing {filteredModels.length} of {allModels.length} model{allModels.length === 1 ? "" : "s"}
-            {searchQuery && ` Â· matching "${searchQuery}"`}
-            {cacheInfo && <span className="hidden sm:inline"> Â· {cacheStatus}</span>}
+            {searchQuery && ` · matching "${searchQuery}"`}
+            {cacheInfo && <span className="hidden sm:inline"> · {cacheStatus}</span>}
           </p>
           <Button type="button" variant="ghost" size="sm" onClick={handleRefreshData}>
             <RefreshCw aria-hidden="true" />
@@ -233,16 +233,16 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
           </div>
         )}
 
-        <section className="mt-7">
+        <section className="mt-8">
           {loading ? (
-            <div className="border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
+            <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center text-sm text-muted-foreground">
               Waiting for model data...
             </div>
           ) : Object.keys(groupedModels).length > 0 ? (
-            <Accordion type="multiple" className="border border-border bg-card">
+            <Accordion type="multiple" className="rounded-2xl overflow-hidden border border-border bg-card">
               {Object.entries(groupedModels).map(([series, models]) => (
                 <AccordionItem key={series} value={series}>
-                  <AccordionTrigger className="px-4 py-3">
+                  <AccordionTrigger className="px-5 py-4">
                     <div className="flex min-w-0 flex-1 items-center justify-between gap-4 text-left">
                       <span className="truncate text-sm font-semibold text-foreground">{series}</span>
                       <span className="shrink-0 text-xs font-normal text-muted-foreground">
@@ -250,10 +250,10 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
                       </span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="border-t border-border bg-muted/20 px-4 py-4">
-                    <div className="divide-y divide-border border border-border bg-background">
+                  <AccordionContent className="border-t border-border bg-muted/20 px-5 py-5">
+                    <div className="rounded-2xl overflow-hidden divide-y divide-border border border-border bg-background">
                       {models.map((model, modelIndex) => (
-                        <div key={`${model.mainModelName}-${modelIndex}`} className="p-4">
+                        <div key={`${model.mainModelName}-${modelIndex}`} className="p-5">
                           <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
                             <h3 className="text-sm font-semibold text-foreground">{model.mainModelName}</h3>
                             {model.codename && (
@@ -278,7 +278,7 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
               ))}
             </Accordion>
           ) : (
-            <div className="border border-dashed border-border px-4 py-10 text-center">
+            <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
               <Search className="mx-auto size-5 text-muted-foreground" aria-hidden="true" />
               <p className="mt-3 text-sm font-medium text-foreground">{searchQuery ? "No models found" : "No models available"}</p>
               <p className="mt-1 text-xs text-muted-foreground">

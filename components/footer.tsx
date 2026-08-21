@@ -2,9 +2,9 @@ import React from "react"
 
 const Footer: React.FC = () => {
   return (
-    <footer className="border-t border-border py-4 text-center text-xs text-muted-foreground">
+    <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
       <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-1 px-4 sm:flex-row sm:justify-between md:px-6">
-        <p>&copy; 2025 Seraphim</p>
+        <p>&copy; {new Date().getFullYear()} Seraphim</p>
         <p>
           Data by{" "}
           <a

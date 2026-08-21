@@ -1,13 +1,13 @@
 import type { Metadata } from "next"
-import { IBM_Plex_Mono } from "next/font/google"
+import { Figtree } from "next/font/google"
 import "./globals.css"
 import { AppShell } from "@/components/route-transition"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const ibmPlexMono = IBM_Plex_Mono({
+const figtree = Figtree({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-ibm-plex-mono",
+  variable: "--font-figtree",
   weight: ["400", "500", "600", "700"],
 })
 
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout() {
   return (
-    <html lang="en" className={ibmPlexMono.variable} suppressHydrationWarning>
-      <body className={ibmPlexMono.className}>
+    <html lang="en" className={figtree.variable} suppressHydrationWarning>
+      <body className={figtree.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <AppShell />
         </ThemeProvider>

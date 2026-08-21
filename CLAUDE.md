@@ -51,19 +51,19 @@ GitHub (KHwang9883/MobileModels)
 
 ### Theme & styling
 
-- Tailwind v4 with `@theme inline` mapping shadcn semantic tokens (`--background`, `--border`, etc.) to `oklch` values in `app/globals.css`. `--radius: 0.25rem`.
+- Tailwind v4 with `@theme inline` mapping shadcn semantic tokens (`--background`, `--border`, etc.) to `oklch` values in `app/globals.css`. `--radius: 0.375rem`.
 - Dark mode is class-based via `next-themes` (`ThemeProvider` in `app/layout.tsx`, `ThemeToggle` component). `suppressHydrationWarning` on `<html>` is required for next-themes.
-- IBM Plex Mono is the global font, loaded via `next/font/google` into `--font-ibm-plex-mono`.
+- Figtree is the global font, loaded via `next/font/google` into `--font-figtree`.
 
 ## Design System
 
 **`DESIGN.md` is the authoritative design spec** and should be followed for any UI work. `example.html` is the visual reference (copy its visual language, not its layout). Key rules:
 
 - OpenCode-inspired: monochrome, compact, technical, border-driven, low decoration.
-- **IBM Plex Mono globally**; 400 body / 500 labels / 600 headings; small uppercase labels.
+- **Figtree globally** (UI and technical data alike); 400 body / 500 labels / 600 headings; small uppercase labels.
 - Semantic shadcn tokens only — no hardcoded colors. Color only when it has meaning (red=error, green=success, amber=warn, blue=info).
 - Dark mode is required (follow system, allow override, persist).
-- Small radius, 1px borders as primary structure, no shadows except floating UI, no hover scaling.
+- Radius split by role: `rounded-full` on interactive controls (buttons, inputs, badges), `rounded-2xl` on main panels (search card, list containers, accordion), inner rows stay flat. Typography is one step larger than the compact baseline (text-xs=14px … text-lg=20px, remapped in `@theme`). 1px borders as primary structure, no shadows except floating UI, no hover scaling.
 - **Do not use `Card` as a generic wrapper** — prefer flat sections with bordered rows.
 - Compact rows/tiles for brand lists; tables for tabular data; quiet status rows (`87 brands · 3,421 models · updated 4m ago`) instead of big colored alerts.
 - Progressive loading preferred over blocking skeletons.

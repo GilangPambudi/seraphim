@@ -15,6 +15,15 @@ The design language is:
 * minimal
 * border-driven
 * low decoration
+* casual-friendly (modern-style)
+
+`modern-style` keeps the OpenCode layout and structure of `opencode-style`, with intentional deviations toward a more casual, friendly feel:
+
+```text
+font   → Figtree (global), typography one step larger
+radius → rounded-full on controls, rounded-2xl on main panels
+space  → generous padding and gaps (roomier than opencode)
+```
 
 Do not copy the exact layout of `example.html`. Copy its **visual language**.
 
@@ -29,7 +38,7 @@ Use:
 * Tailwind CSS v4
 * shadcn/ui
 * Lucide icons
-* IBM Plex Mono
+* Figtree
 * semantic CSS variables from shadcn
 
 Prefer Tailwind utilities over custom CSS.
@@ -47,9 +56,9 @@ Do not create custom classes when Tailwind already covers the requirement.
 
 ## 3. Typography
 
-Use **IBM Plex Mono globally**.
+Use **Figtree globally** — for UI text and technical data (model numbers, codenames) alike.
 
-Recommended weights:
+Figtree weights:
 
 ```text
 400 → body
@@ -58,13 +67,14 @@ Recommended weights:
 700 → rare emphasis
 ```
 
-Recommended sizing:
+Recommended sizing (one step larger than the compact opencode baseline):
 
 ```text
-10–11px → metadata / utility labels
-12–14px → normal UI
-16–18px → section heading
-20–30px → page heading
+14px → metadata / utility labels
+16px → normal UI
+18px → section subtext / secondary
+20px → section heading
+24px → page heading
 ```
 
 Avoid oversized typography for application interfaces.
@@ -76,6 +86,8 @@ Use uppercase + letter spacing mainly for small labels, tabs, and metadata.
 ## 4. Colors
 
 Default brand direction is **black and white**.
+
+In `modern-style`, the base background is a subtle cool gray (`--background: oklch(0.975 0.002 240)` light, `oklch(0.16 0.005 240)` dark) with a matching cool tint on `--border`/`--muted`/`--accent`. Panels and text stay white/black.
 
 Use semantic shadcn tokens:
 
@@ -142,24 +154,25 @@ Dark mode should use intentional semantic tokens, not manually invert every comp
 
 Use Tailwind radius utilities.
 
-Keep the global shadcn radius small.
-
-Recommended:
-
-```css
---radius: 0.25rem;
-```
-
-Preferred usage:
+Radius is split by role:
 
 ```text
-rounded-none → structural panes
-rounded-sm   → buttons / inputs
-rounded-md   → dialogs / popovers if needed
-rounded-lg+  → uncommon
+rounded-2xl → main panels / sections: search card, list containers, accordion
+rounded-full → interactive controls: buttons, inputs, search, badges, tags
+rounded-lg   → floating UI: dialogs, popovers, dropdowns
+rounded-md   → compact secondary surfaces
+rounded-none → inner rows, tables, divided rows
 ```
 
-Avoid pill-shaped UI unless semantically appropriate.
+Main panels get `rounded-2xl` for a casual, friendly feel; interactive controls get `rounded-full`; inner rows stay flat so the border-driven structure keeps its precision.
+
+Do **not** apply `rounded-full` to large structural panes (accordion, cards, search section, rows) — `rounded-2xl` is the ceiling for panels, full radius would read as gimmicky.
+
+Keep the global shadcn radius small as the fallback:
+
+```css
+--radius: 0.375rem;
+```
 
 ---
 
@@ -424,7 +437,7 @@ Preferred characteristics:
 
 ```text
 thin border
-small radius
+full radius (rounded-full)
 no shadow
 neutral background
 visible focus
@@ -433,7 +446,7 @@ visible focus
 Example:
 
 ```tsx
-<Input className="h-9 rounded-sm shadow-none" />
+<Input className="h-9 rounded-full shadow-none" />
 ```
 
 Important fields must have labels.
@@ -469,7 +482,7 @@ border
 muted foreground
 ```
 
-Avoid large pill-style tabs by default.
+Pill-style tabs are fine as compact controls, but keep them small and monochrome — do not scale them up into large segmented buttons.
 
 ---
 
@@ -648,14 +661,24 @@ Allowed:
 * accordion transition
 * loading state
 * dialog entrance
+* route slide transition (see below)
 
 Avoid:
 
 * hover scaling
 * decorative bouncing
-* large translations
 * long animations
 * constant movement
+
+### Route slide transition
+
+Page navigation slides horizontally, driven by the slide-deck in `components/route-transition.tsx`:
+
+* forward (`/` → `/brandSlug`) → slides left-to-right, new page enters from the right
+* back (`/brandSlug` → `/`) → slides right-to-left, previous page enters from the left
+* duration **300ms** ease-out
+* respect `prefers-reduced-motion` — disable the slide (`motion-reduce:transition-none`) and swap instantly
+* the header stays anchored; only content slides
 
 ---
 
@@ -675,13 +698,13 @@ When needed:
 Suggested defaults:
 
 ```text
-Button    → h-9, rounded-sm, shadow-none
-Input     → h-9, rounded-sm, shadow-none
-Textarea  → rounded-sm, shadow-none
-Badge     → rounded-sm
-Alert     → rounded-sm, shadow-none
-Card      → rounded-sm, shadow-none
-Accordion → flat borders where appropriate
+Button    → h-9, rounded-full, shadow-none
+Input     → h-9, rounded-full, shadow-none
+Textarea  → rounded-full, shadow-none
+Badge     → rounded-full
+Alert     → rounded-md, shadow-none
+Card      → rounded-md, shadow-none
+Accordion → rounded-md container, flat divided content
 ```
 
 ---
@@ -703,8 +726,8 @@ Preserve application behavior:
 Visual migration:
 
 ```text
-Figtree
-→ IBM Plex Mono
+IBM Plex Mono
+→ Figtree (global)
 
 large centered hero
 → compact application header
@@ -718,8 +741,11 @@ hover scale + shadow
 nested cards
 → flat sections
 
-large radius
-→ small radius
+small radius everywhere
+→ rounded-full on controls, rounded-2xl on main panels
+
+sharp square boxes
+→ rounded panels with breathing room
 
 colorful status alerts
 → quiet status row
@@ -755,7 +781,7 @@ Avoid:
 Card soup
 Large shadows
 Hover scaling
-Rounded-xl everywhere
+rounded-full on structural panes (accordion, cards, rows)
 Decorative gradients
 Random accent colors
 Huge utility-page headings
@@ -773,14 +799,14 @@ Duplicate Tailwind/theme configuration
 
 Before considering UI complete:
 
-* [ ] IBM Plex Mono is global.
+* [ ] Figtree is the global font.
 * [ ] Tailwind is used for component styling.
 * [ ] shadcn primitives are used where appropriate.
 * [ ] Semantic theme tokens are used.
 * [ ] Light mode works.
 * [ ] Dark mode works.
 * [ ] Borders are mostly 1px.
-* [ ] Radius is small.
+* [ ] Interactive controls are rounded-full; main panels are rounded-2xl; inner rows stay flat.
 * [ ] Shadows are absent unless necessary.
 * [ ] No unnecessary hover scaling.
 * [ ] Color is semantic, not decorative.
@@ -806,8 +832,8 @@ When rules conflict, prioritize:
 2. clarity
 3. responsive correctness
 4. accessibility
-5. consistency with example.html
+5. consistency with example.html layout
 6. visual polish
 ```
 
-`example.html` is a **design reference**, not a layout prison.
+`example.html` is a **design reference**, not a layout prison. The `modern-style` deviations — Figtree font, `rounded-full` on controls — are intentional and take precedence over strict `example.html` fidelity.
