@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Klip-Klop</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- IBM Plex Mono -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Material Symbols -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet"
+  >
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+
+      theme: {
+        extend: {
+          colors: {
+            background: "#faf9f9",
+            surface: "#faf9f9",
+
+            "surface-lowest": "#ffffff",
+            "surface-low": "#f4f3f3",
+            "surface-container": "#eeeeed",
+            "surface-high": "#e9e8e8",
+            "surface-highest": "#e3e2e2",
+
+            primary: "#000000",
+            "on-primary": "#ffffff",
+
+            secondary: "#5e5e5e",
+
+            foreground: "#1a1c1c",
+
+            outline: "#7e7576",
+            "outline-variant": "#cfc4c5",
+
+            error: "#ba1a1a"
+          },
+
+          fontFamily: {
+            mono: [
+              '"IBM Plex Mono"',
+              "monospace"
+            ]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body
+  class="
+    flex
+    h-dvh
+    max-h-dvh
+    flex-col
+    overflow-hidden
+
+    bg-background
+    font-mono
+    text-foreground
+  "
+>
+
+  <!-- ===================================================== -->
+  <!-- HEADER -->
+  <!-- ===================================================== -->
+
+  <header
+    class="
+      w-full
+      shrink-0
+
+      border-b
+      border-outline-variant
+
+      bg-surface
+    "
+  >
+
+    <!-- Desktop / Tablet Header -->
+    <div
+      class="
+        mx-auto
+        flex
+        w-full
+        max-w-[1440px]
+        items-center
+        gap-3
+
+        px-4
+        py-3
+
+        md:px-6
+
+        lg:gap-4
+        lg:px-8
+        lg:py-4
+
+        xl:px-12
+      "
+    >
+
+      <!-- Brand -->
+      <div
+        class="
+          flex
+          shrink-0
+          items-center
+          gap-2
+        "
+      >
+        <span
+          class="
+            material-symbols-outlined
+            text-[22px]
+            text-primary
+
+            [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_22]
+          "
+        >
+          content_cut
+        </span>
+
+        <span
+          class="
+            text-[12px]
+            font-semibold
+            uppercase
+            tracking-[0.14em]
+
+            text-primary
+          "
+        >
+          Klip-Klop
+        </span>
+      </div>
+
+
+      <!-- URL Input Desktop -->
+      <div
+        class="
+          hidden
+          min-w-0
+          flex-1
+          items-center
+
+          border
+          border-outline-variant
+
+          bg-surface-lowest
+
+          transition-colors
+
+          focus-within:border-primary
+
+          sm:flex
+        "
+      >
+        <span
+          class="
+            material-symbols-outlined
+
+            shrink-0
+
+            pl-3
+
+            text-[19px]
+            text-secondary
+
+            [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_19]
+          "
+        >
+          link
+        </span>
+
+        <input
+          type="text"
+          placeholder="Paste YouTube Video ID or URL"
+
+          class="
+            min-w-0
+            w-full
+
+            border-0
+            bg-transparent
+
+            px-3
+            py-2.5
+
+            text-[13px]
+            text-primary
+
+            placeholder:text-secondary
+
+            focus:border-0
+            focus:outline-none
+            focus:ring-0
+          "
+        >
+      </div>
+
+
+      <!-- Header Actions -->
+      <div
+        class="
+          ml-auto
+          flex
+          shrink-0
+          items-center
+          gap-2
+        "
+      >
+        <button
+          type="button"
+          aria-label="Toggle theme"
+
+          class="
+            flex
+            size-10
+            items-center
+            justify-center
+
+            border
+            border-outline-variant
+
+            bg-surface
+
+            text-primary
+
+            transition-colors
+
+            hover:bg-surface-container
+
+            focus:outline-none
+            focus:ring-2
+            focus:ring-primary
+            focus:ring-offset-1
+          "
+        >
+          <span
+            class="
+              material-symbols-outlined
+              text-[20px]
+
+              [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_20]
+            "
+          >
+            light_mode
+          </span>
+        </button>
+
+        <button
+          type="button"
+          aria-label="Exit"
+
+          class="
+            flex
+            size-10
+            items-center
+            justify-center
+
+            border
+            border-outline-variant
+
+            bg-surface
+
+            text-primary
+
+            transition-colors
+
+            hover:bg-surface-container
+
+            focus:outline-none
+            focus:ring-2
+            focus:ring-primary
+            focus:ring-offset-1
+          "
+        >
+          <span
+            class="
+              material-symbols-outlined
+              text-[20px]
+
+              [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_20]
+            "
+          >
+            power_settings_new
+          </span>
+        </button>
+      </div>
+
+    </div>
+
+
+    <!-- Mobile URL Input -->
+    <div
+      class="
+        px-4
+        pb-3
+
+        sm:hidden
+      "
+    >
+      <div
+        class="
+          flex
+          w-full
+          items-center
+
+          border
+          border-outline-variant
+
+          bg-surface-lowest
+
+          transition-colors
+
+          focus-within:border-primary
+        "
+      >
+        <span
+          class="
+            material-symbols-outlined
+
+            shrink-0
+
+            pl-3
+
+            text-[19px]
+            text-secondary
+
+            [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_19]
+          "
+        >
+          link
+        </span>
+
+        <input
+          type="text"
+          placeholder="Paste YouTube Video ID or URL"
+
+          class="
+            min-w-0
+            w-full
+
+            border-0
+            bg-transparent
+
+            px-3
+            py-2.5
+
+            text-[13px]
+            text-primary
+
+            placeholder:text-secondary
+
+            focus:border-0
+            focus:outline-none
+            focus:ring-0
+          "
+        >
+      </div>
+    </div>
+
+  </header>
+
+
+  <!-- ===================================================== -->
+  <!-- APPLICATION -->
+  <!-- ===================================================== -->
+
+  <main
+    class="
+      mx-auto
+
+      flex
+      min-h-0
+      w-full
+      max-w-[1440px]
+      flex-1
+
+      flex-col
+      gap-4
+
+      overflow-y-auto
+
+      px-4
+      py-4
+
+      md:px-6
+
+      lg:flex-row
+      lg:gap-6
+      lg:overflow-hidden
+      lg:px-8
+      lg:py-6
+
+      xl:px-12
+    "
+  >
+
+    <!-- =================================================== -->
+    <!-- VIDEO AREA -->
+    <!-- =================================================== -->
+
+    <section
+      class="
+        relative
+
+        flex
+        aspect-video
+        w-full
+        shrink-0
+
+        items-center
+        justify-center
+
+        overflow-hidden
+
+        border
+        border-outline-variant
+
+        bg-black
+
+        lg:aspect-auto
+        lg:min-h-0
+        lg:min-w-0
+        lg:flex-1
+        lg:shrink
+      "
+    >
+
+      <img
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaaXfPZ0HN_AbL5uqCH5-NtJBbtSQQS25-Yyn1PFKoM15Q_o1iJU8cV7qwsgztT1NvaWdzP_6Q49Sxm80KlejL8W3ChHQhg3lVcKTQKJRWdQlMfmrz0X6UsMg12KjMNnkNXodcvAmwpL6rRRfZ-Jz3GeyhVSQ25449370pZcAkrC2o5RylLGA89kilXWKCjYzgDrJGP7UWZDT4r3iRb0vGMeQAA0H0Q2j_S-u9fUC__2phoTxeEz_FXA"
+
+        alt="Video player placeholder"
+
+        class="
+          block
+          h-full
+          max-h-full
+          w-full
+          max-w-full
+
+          object-contain
+        "
+      >
+
+    </section>
+
+
+    <!-- =================================================== -->
+    <!-- CONTROL PANEL -->
+    <!-- =================================================== -->
+
+    <aside
+      class="
+        flex
+        w-full
+        shrink-0
+        flex-col
+        gap-5
+
+        lg:h-full
+        lg:min-h-0
+        lg:w-[380px]
+        lg:overflow-y-auto
+        lg:overscroll-contain
+        lg:pr-1
+
+        xl:w-[400px]
+      "
+    >
+
+      <!-- Tabs -->
+      <div
+        class="
+          flex
+          shrink-0
+
+          border
+          border-outline-variant
+        "
+      >
+
+        <button
+          type="button"
+
+          class="
+            flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+
+            bg-primary
+
+            px-4
+            py-3
+
+            text-[11px]
+            font-semibold
+            uppercase
+            tracking-[0.08em]
+
+            text-on-primary
+          "
+        >
+          <span
+            class="
+              material-symbols-outlined
+              text-[16px]
+
+              [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_16]
+            "
+          >
+            tune
+          </span>
+
+          Controls
+        </button>
+
+
+        <button
+          type="button"
+
+          class="
+            flex
+            flex-1
+            items-center
+            justify-center
+            gap-2
+
+            border-l
+            border-outline-variant
+
+            bg-surface
+
+            px-4
+            py-3
+
+            text-[11px]
+            font-semibold
+            uppercase
+            tracking-[0.08em]
+
+            text-primary
+
+            transition-colors
+
+            hover:bg-surface-container
+          "
+        >
+          <span
+            class="
+              material-symbols-outlined
+              text-[16px]
+
+              [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_16]
+            "
+          >
+            history
+          </span>
+
+          Downloads
+        </button>
+
+      </div>
+
+
+      <!-- Helper -->
+      <p
+        class="
+          shrink-0
+
+          text-[12px]
+          leading-[1.55]
+
+          text-secondary
+        "
+      >
+        Set Start/End to 00:00:00 to ignore/full download.
+      </p>
+
+
+      <!-- ================================================= -->
+      <!-- START TIME -->
+      <!-- ================================================= -->
+
+      <div
+        class="
+          flex
+          shrink-0
+          flex-col
+          gap-1.5
+        "
+      >
+
+        <label
+          class="
+            text-[12px]
+            font-medium
+            text-primary
+          "
+        >
+          Start Time
+        </label>
+
+
+        <div
+          class="
+            flex
+            items-center
+            gap-2
+          "
+        >
+
+          <input
+            type="number"
+            value="0"
+            min="0"
+
+            class="
+              min-w-0
+              flex-1
+
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-2
+              py-2.5
+
+              text-center
+              text-[13px]
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
+          >
+
+          <span
+            class="
+              shrink-0
+              text-[13px]
+              text-primary
+            "
+          >
+            :
+          </span>
+
+          <input
+            type="number"
+            value="0"
+            min="0"
+
+            class="
+              min-w-0
+              flex-1
+
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-2
+              py-2.5
+
+              text-center
+              text-[13px]
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
+          >
+
+          <span
+            class="
+              shrink-0
+              text-[13px]
+              text-primary
+            "
+          >
+            :
+          </span>
+
+          <input
+            type="number"
+            value="0"
+            min="0"
+
+            class="
+              min-w-0
+              flex-1
+
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-2
+              py-2.5
+
+              text-center
+              text-[13px]
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- END TIME -->
+      <!-- ================================================= -->
+
+      <div
+        class="
+          flex
+          shrink-0
+          flex-col
+          gap-1.5
+        "
+      >
+
+        <label
+          class="
+            text-[12px]
+            font-medium
+            text-primary
+          "
+        >
+          End Time
+        </label>
+
+
+        <div
+          class="
+            flex
+            items-center
+            gap-2
+          "
+        >
+
+          <input
+            type="number"
+            value="0"
+            min="0"
+
+            class="
+              min-w-0
+              flex-1
+
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-2
+              py-2.5
+
+              text-center
+              text-[13px]
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
+          >
+
+          <span
+            class="
+              shrink-0
+              text-[13px]
+              text-primary
+            "
+          >
+            :
+          </span>
+
+          <input
+            type="number"
+            value="0"
+            min="0"
+
+            class="
+              min-w-0
+              flex-1
+
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-2
+              py-2.5
+
+              text-center
+              text-[13px]
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
+          >
+
+          <span
+            class="
+              shrink-0
+              text-[13px]
+              text-primary
+            "
+          >
+            :
+          </span>
+
+          <input
+            type="number"
+            value="0"
+            min="0"
+
+            class="
+              min-w-0
+              flex-1
+
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-2
+              py-2.5
+
+              text-center
+              text-[13px]
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+
+              [&::-webkit-inner-spin-button]:appearance-none
+              [&::-webkit-outer-spin-button]:appearance-none
+            "
+          >
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- FILENAME -->
+      <!-- ================================================= -->
+
+      <div
+        class="
+          flex
+          shrink-0
+          flex-col
+          gap-1.5
+        "
+      >
+
+        <label
+          class="
+            text-[12px]
+            font-medium
+            text-primary
+          "
+        >
+          Filename
+        </label>
+
+        <input
+          type="text"
+          placeholder="Auto-generated from video title"
+
+          class="
+            w-full
+
+            border
+            border-outline-variant
+
+            bg-surface-lowest
+
+            px-3
+            py-2.5
+
+            text-[13px]
+
+            placeholder:text-secondary
+
+            focus:border-primary
+            focus:outline-none
+            focus:ring-0
+          "
+        >
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- RESOLUTION -->
+      <!-- ================================================= -->
+
+      <div
+        class="
+          flex
+          shrink-0
+          flex-col
+          gap-1.5
+        "
+      >
+
+        <label
+          class="
+            text-[12px]
+            font-medium
+            text-primary
+          "
+        >
+          Resolution
+        </label>
+
+
+        <div class="relative">
+
+          <select
+            class="
+              w-full
+              appearance-none
+
+              border
+              border-outline-variant
+
+              bg-surface-lowest
+
+              px-3
+              py-2.5
+              pr-10
+
+              text-[13px]
+
+              text-primary
+
+              focus:border-primary
+              focus:outline-none
+              focus:ring-0
+            "
+          >
+            <option>Select resolution</option>
+            <option>2160p</option>
+            <option>1440p</option>
+            <option>1080p</option>
+            <option>720p</option>
+            <option>480p</option>
+            <option>360p</option>
+          </select>
+
+
+          <span
+            class="
+              material-symbols-outlined
+
+              pointer-events-none
+
+              absolute
+              right-3
+              top-1/2
+
+              -translate-y-1/2
+
+              text-[18px]
+              text-secondary
+
+              [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_18]
+            "
+          >
+            expand_more
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- ACTIONS -->
+      <!-- ================================================= -->
+
+      <div
+        class="
+          mt-auto
+
+          flex
+          shrink-0
+          flex-col
+          gap-3
+
+          pt-3
+          pb-1
+        "
+      >
+
+        <div
+          class="
+            flex
+            gap-3
+          "
+        >
+
+          <!-- Preview -->
+          <button
+            type="button"
+
+            class="
+              flex
+              min-w-0
+              flex-1
+              items-center
+              justify-center
+              gap-2
+
+              border
+              border-outline-variant
+
+              bg-surface
+
+              px-3
+              py-3
+
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-[0.08em]
+
+              text-primary
+
+              transition-colors
+
+              hover:bg-surface-container
+
+              focus:outline-none
+              focus:ring-2
+              focus:ring-primary
+              focus:ring-offset-1
+            "
+          >
+            <span
+              class="
+                material-symbols-outlined
+                text-[16px]
+
+                [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_16]
+              "
+            >
+              play_arrow
+            </span>
+
+            Preview
+          </button>
+
+
+          <!-- Download -->
+          <button
+            type="button"
+
+            class="
+              flex
+              min-w-0
+              flex-1
+              items-center
+              justify-center
+              gap-2
+
+              border
+              border-primary
+
+              bg-primary
+
+              px-3
+              py-3
+
+              text-[11px]
+              font-semibold
+              uppercase
+              tracking-[0.08em]
+
+              text-on-primary
+
+              transition-opacity
+
+              hover:opacity-80
+
+              focus:outline-none
+              focus:ring-2
+              focus:ring-primary
+              focus:ring-offset-1
+            "
+          >
+            <span
+              class="
+                material-symbols-outlined
+                text-[16px]
+
+                [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_16]
+              "
+            >
+              download
+            </span>
+
+            Download
+          </button>
+
+        </div>
+
+
+        <!-- Open Folder -->
+        <button
+          type="button"
+
+          class="
+            flex
+            w-full
+            items-center
+            justify-center
+            gap-2
+
+            border
+            border-outline-variant
+
+            bg-surface
+
+            px-4
+            py-3
+
+            text-[11px]
+            font-semibold
+            uppercase
+            tracking-[0.08em]
+
+            text-primary
+
+            transition-colors
+
+            hover:bg-surface-container
+
+            focus:outline-none
+            focus:ring-2
+            focus:ring-primary
+            focus:ring-offset-1
+          "
+        >
+          <span
+            class="
+              material-symbols-outlined
+              text-[16px]
+
+              [font-variation-settings:'FILL'_0,'wght'_400,'GRAD'_0,'opsz'_16]
+            "
+          >
+            folder_open
+          </span>
+
+          Open Folder
+        </button>
+
+      </div>
+
+    </aside>
+
+  </main>
+
+</body>
+</html>
