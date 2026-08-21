@@ -63,7 +63,7 @@ GitHub (KHwang9883/MobileModels)
 - **Figtree globally** (UI and technical data alike); 400 body / 500 labels / 600 headings; small uppercase labels.
 - Semantic shadcn tokens only — no hardcoded colors. Color only when it has meaning (red=error, green=success, amber=warn, blue=info).
 - Dark mode is required (follow system, allow override, persist).
-- Radius split by role: `rounded-full` on interactive controls (buttons, inputs, badges), `rounded-2xl` on main panels (search card, list containers, accordion), inner rows stay flat. Typography is one step larger than the compact baseline (text-xs=14px … text-lg=20px, remapped in `@theme`). 1px borders as primary structure, no shadows except floating UI, no hover scaling.
+- Radius split by role: `rounded-full` on interactive controls (buttons, inputs, badges), `rounded-2xl` on main panels (search card, list containers, accordion), inner rows stay flat. Typography uses the standard Tailwind scale (text-xs=12px … text-lg=18px). 1px borders as primary structure, no shadows except floating UI, no hover scaling.
 - **Do not use `Card` as a generic wrapper** — prefer flat sections with bordered rows.
 - Compact rows/tiles for brand lists; tables for tabular data; quiet status rows (`87 brands · 3,421 models · updated 4m ago`) instead of big colored alerts.
 - Progressive loading preferred over blocking skeletons.

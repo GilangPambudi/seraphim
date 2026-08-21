@@ -20,7 +20,7 @@ The design language is:
 `modern-style` keeps the OpenCode layout and structure of `opencode-style`, with intentional deviations toward a more casual, friendly feel:
 
 ```text
-font   → Figtree (global), typography one step larger
+font   → Figtree (global)
 radius → rounded-full on controls, rounded-2xl on main panels
 space  → generous padding and gaps (roomier than opencode)
 ```
@@ -67,14 +67,14 @@ Figtree weights:
 700 → rare emphasis
 ```
 
-Recommended sizing (one step larger than the compact opencode baseline):
+Recommended sizing (Tailwind standard scale):
 
 ```text
-14px → metadata / utility labels
-16px → normal UI
-18px → section subtext / secondary
-20px → section heading
-24px → page heading
+12px → metadata / utility labels (text-xs)
+14px → normal UI (text-sm)
+16px → body / base (text-base)
+18px → section heading (text-lg)
+20px → page heading (text-xl)
 ```
 
 Avoid oversized typography for application interfaces.
