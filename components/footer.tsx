@@ -1,35 +1,33 @@
-// components/footer.tsx
-import React from 'react';
+import React from "react"
 
 const Footer: React.FC = () => {
   return (
-    <footer className="text-gray-600 py-4 text-center text-base">
-      <div className="container mx-auto px-4 flex flex-col items-center space-y-1">
-        <p>&copy; 2025 Serapihm.</p>
+    <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
+      <div className="mx-auto flex max-w-screen-xl flex-col items-center gap-1 px-4 sm:flex-row sm:justify-between md:px-6">
+        <p>&copy; {new Date().getFullYear()} Seraphim</p>
         <p>
           Data by{" "}
           <a
             href="https://github.com/KHwang9883/MobileModels/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:text-blue-400 underline"
+            className="text-foreground underline underline-offset-4 hover:text-muted-foreground"
           >
             KHwang9883/MobileModels
           </a>
-        </p>
-        <p>
+          <span className="mx-1">·</span>
           <a
             href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
             target="_blank"
             rel="license noopener noreferrer"
-            className="text-blue-500 hover:text-blue-400 underline"
+            className="text-foreground underline underline-offset-4 hover:text-muted-foreground"
           >
             CC BY-NC-SA 4.0
           </a>
         </p>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer
