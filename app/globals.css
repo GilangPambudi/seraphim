@@ -152,10 +152,10 @@
 }
 @keyframes theme-circle-reveal {
   from {
-    clip-path: circle(0 at var(--theme-reveal-x, 100%) var(--theme-reveal-y, 0));
+    clip-path: circle(0 at top right);
   }
   to {
-    clip-path: circle(150% at var(--theme-reveal-x, 100%) var(--theme-reveal-y, 0));
+    clip-path: circle(150% at top right);
   }
 }
 @media (prefers-reduced-motion: reduce) {

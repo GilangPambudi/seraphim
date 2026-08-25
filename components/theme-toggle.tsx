@@ -16,18 +16,14 @@ export function ThemeToggle() {
 
   const isDark = mounted && resolvedTheme === "dark"
 
-  const handleToggle = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleToggle = () => {
     const next = isDark ? "light" : "dark"
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const supported = typeof document.startViewTransition === "function"
 
-    // Circular reveal originating from the toggle button via the View Transition API.
+    // Circular reveal from the top-right corner via the View Transition API.
     // Falls back to an instant swap when unsupported (e.g. Firefox) or motion is reduced.
     if (supported && !reducedMotion) {
-      const root = document.documentElement
-      root.style.setProperty("--theme-reveal-x", `${event.clientX}px`)
-      root.style.setProperty("--theme-reveal-y", `${event.clientY}px`)
-
       document.startViewTransition(() => {
         flushSync(() => setTheme(next))
       })
