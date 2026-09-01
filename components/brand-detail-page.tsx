@@ -48,7 +48,6 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
         const cachedModels = cacheManager.get<PhoneModel[]>(brandModelsCacheKey)
 
         if (cachedModels) {
-          console.log(`Loading models for ${brandSlug} from cache.`)
           setLoadingMessage("Loading from cache...")
           setAllModels(cachedModels)
           setFilteredModels(cachedModels)
@@ -59,14 +58,10 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
             cacheManager.get<Brand[]>("all_models_global_data")
           const cachedBrand = cachedBrands?.find((brand) => brand.slug === brandSlug)
           setBrandName(cachedBrand?.name ?? parseBrandName(`${brandSlug}.md`).name)
-
-          const info = cacheManager.getCacheInfo(brandModelsCacheKey)
-          setCacheInfo(info)
+          setCacheInfo(cacheManager.getCacheInfo(brandModelsCacheKey))
           setLoading(false)
         } else {
-          console.log(`Cache miss for ${brandSlug}, fetching fresh data.`)
           setLoadingMessage(`Fetching ${brandSlug} models...`)
-
           const files = await fetchBrandFiles()
           const matchingFile = files.find((file) => parseBrandName(file.name).slug === brandSlug)
 
@@ -77,20 +72,14 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
 
           const { name } = parseBrandName(matchingFile.name)
           setBrandName(name)
-
           const models = await loadBrandModels(matchingFile.name, brandSlug)
-          console.log(`Fetched and cached ${models.length} models for ${brandSlug}.`)
-
           setAllModels(models)
           setFilteredModels(models)
           setIsFromCache(false)
-
-          const info = cacheManager.getCacheInfo(brandModelsCacheKey)
-          setCacheInfo(info)
+          setCacheInfo(cacheManager.getCacheInfo(brandModelsCacheKey))
           setLoading(false)
         }
       } catch (err) {
-        console.error("Error loading brand data:", err)
         setError(err instanceof Error ? err.message : "Failed to load brand data")
         setLoading(false)
       }
@@ -103,19 +92,14 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
     setFilteredModels(searchQuery.trim() ? searchModels(allModels, searchQuery) : allModels)
   }, [allModels, searchQuery])
 
-  const handleSearch = () => {
-    setSearchQuery(searchInput.trim())
-  }
-
+  const handleSearch = () => setSearchQuery(searchInput.trim())
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") handleSearch()
   }
-
   const handleRefreshData = () => {
     cacheManager.delete(`brand_${brandSlug}`)
     window.location.reload()
   }
-
   const handleBack = () => {
     if (hasInternalRouteHistory()) {
       window.history.back()
@@ -144,21 +128,15 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
 
   if (error) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-6">
-        <section className="w-full max-w-lg rounded-2xl border border-destructive/50 bg-card p-5">
-          <div className="flex items-center gap-2 text-base font-semibold uppercase tracking-[0.08em] text-destructive">
+      <div className="flex min-h-dvh items-center justify-center bg-[#292b2d] px-4 py-6 text-[#e8e7df]">
+        <section className="w-full max-w-xl border border-[#ff8147] p-6 md:p-8">
+          <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#ff8147]">
             <AlertCircle className="size-4" aria-hidden="true" />
             <h1>Unable to load brand data</h1>
           </div>
-          <p className="mt-4 text-base text-destructive">{error}</p>
-          <div className="mt-5 flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={handleBack}>
-              <ArrowLeft aria-hidden="true" />
-              Back to brands
-            </Button>
-            <Button type="button" variant="ghost" onClick={() => window.location.reload()}>
-              Try again
-            </Button>
+          <p className="mt-6 text-lg">{error}</p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            <Button type="button" variant="outline" onClick={handleBack}><ArrowLeft aria-hidden="true" />Back to brands</Button>
           </div>
         </section>
       </div>
@@ -166,133 +144,111 @@ export function BrandDetailView({ brandSlug, initialModels, initialBrandName }: 
   }
 
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl items-center gap-4 px-4 py-4 md:gap-5 md:px-6 lg:px-8">
-          <Button type="button" variant="ghost" size="sm" onClick={handleBack} className="shrink-0">
-            <ArrowLeft aria-hidden="true" />
-            <span className="hidden sm:inline">Brands</span>
-          </Button>
-          <div className="min-w-0 flex-1 border-l border-border pl-3 md:pl-4">
-            <p className="truncate text-sm uppercase tracking-[0.12em] text-muted-foreground">Brand index / {brandSlug}</p>
-            <h1 className="truncate text-lg font-semibold text-foreground">{brandName || brandSlug}</h1>
+    <div className="min-h-dvh overflow-x-hidden bg-background text-foreground">
+      <section className="bg-[#292b2d] text-[#e8e7df]">
+        <header className="editorial-shell flex items-center justify-between border-b border-white/10 py-5">
+          <button type="button" onClick={handleBack} className="flex items-center gap-2 text-xs uppercase tracking-[0.12em] text-white/55 hover:text-[#ff8147]">
+            <ArrowLeft className="size-4" aria-hidden="true" /> Brands
+          </button>
+          <ThemeToggle />
+        </header>
+
+        <div className="editorial-shell grid min-h-[52vh] items-end gap-10 py-14 md:grid-cols-[1fr_auto] md:py-20">
+          <div>
+            <p className="editorial-kicker editorial-orange">Brand index / {brandSlug}</p>
+            <h1 className="editorial-display mt-7 break-words">{brandName || brandSlug}</h1>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <p className="hidden text-sm text-muted-foreground sm:block">
-              {allModels.length} model{allModels.length === 1 ? "" : "s"}
-            </p>
-            <ThemeToggle />
+          <div className="pb-2 text-left md:text-right">
+            <p className="text-6xl font-medium tracking-[-0.06em] text-[#8f987b] md:text-8xl">{allModels.length}</p>
+            <p className="editorial-kicker mt-2 text-white/40">Models indexed</p>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main className="mx-auto w-full max-w-screen-xl px-4 py-8 md:px-6 md:py-12">
-        <section className="rounded-2xl overflow-hidden border border-border bg-card">
-          <div className="border-b border-border px-5 py-5 md:px-6">
-            <p className="text-sm font-medium uppercase tracking-[0.12em] text-muted-foreground">Brand search</p>
-            <h2 className="mt-1 text-xl font-semibold text-foreground">Find a model in {brandName || brandSlug}</h2>
-          </div>
-          <div className="p-5 md:p-6">
-            <label htmlFor="brand-search" className="mb-2 block text-sm font-medium text-foreground">
-              Model name, codename, variant, or model number
-            </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <div className="relative min-w-0 flex-1">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
-                <Input
-                  id="brand-search"
-                  placeholder={`Search ${brandName || brandSlug} models`}
-                  value={searchInput}
-                  onChange={(event) => setSearchInput(event.target.value)}
-                  onKeyDown={handleKeyDown}
-                  disabled={loading}
-                  className="h-10 pl-10"
-                />
+      <section className="bg-[#e8e7df] text-[#292b2d]">
+        <div className="editorial-shell py-14 md:py-20">
+          <div className="grid gap-10 border-b border-black/15 pb-12 md:grid-cols-[.55fr_1.45fr] md:items-end">
+            <div className="editorial-kicker text-black/45">Search / {brandName || brandSlug}</div>
+            <div>
+              <h2 className="editorial-section-title"><span className="text-[#8f987b]">Find</span><br />a model.</h2>
+              <div className="mt-8 flex border-b border-black/35">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-[#ff8147]" aria-hidden="true" />
+                  <Input
+                    id="brand-search"
+                    placeholder={`Search ${brandName || brandSlug} models`}
+                    value={searchInput}
+                    onChange={(event) => setSearchInput(event.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={loading}
+                    className="h-12 rounded-none border-0 bg-transparent pl-7 text-base shadow-none placeholder:text-black/25 focus-visible:ring-0"
+                  />
+                </div>
+                <Button type="button" onClick={handleSearch} disabled={loading} className="h-12 rounded-none bg-[#ff8147] px-6 text-[#292b2d] hover:bg-[#ff9466]">Search</Button>
               </div>
-              <Button type="button" onClick={handleSearch} disabled={loading} className="h-10 w-full sm:w-auto">Search</Button>
             </div>
           </div>
-        </section>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border py-4 text-sm text-muted-foreground">
-          <p>
-            Showing {filteredModels.length} of {allModels.length} model{allModels.length === 1 ? "" : "s"}
-            {searchQuery && ` · matching "${searchQuery}"`}
-            {cacheInfo && <span className="hidden sm:inline"> · {cacheStatus}</span>}
-          </p>
-          <Button type="button" variant="ghost" size="sm" onClick={handleRefreshData}>
-            <RefreshCw aria-hidden="true" />
-            Refresh
-          </Button>
-        </div>
-        {cacheInfo && <p className="py-2 text-sm text-muted-foreground sm:hidden">{cacheStatus}</p>}
-        {loading && (
-          <div className="flex items-center gap-2 border-b border-border py-2 text-sm text-muted-foreground">
-            <span className="size-1.5 animate-pulse bg-primary" aria-hidden="true" />
-            {loadingMessage || "Loading brand data..."}
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/15 py-4 text-xs uppercase tracking-[0.09em] text-black/45">
+            <p>
+              Showing {filteredModels.length} of {allModels.length} models
+              {searchQuery && ` · matching “${searchQuery}”`}
+              {cacheInfo && <span className="hidden sm:inline"> · {cacheStatus}</span>}
+            </p>
+            <button type="button" onClick={handleRefreshData} className="flex items-center gap-2 hover:text-black"><RefreshCw className="size-3.5" aria-hidden="true" />Refresh</button>
           </div>
-        )}
 
-        <section className="mt-8">
-          {loading ? (
-            <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center text-base text-muted-foreground">
-              Waiting for model data...
+          {loading && (
+            <div className="border-b border-black/15 py-3 text-xs uppercase tracking-[0.08em] text-black/45">
+              {loadingMessage || "Loading brand data..."}
             </div>
-          ) : Object.keys(groupedModels).length > 0 ? (
-            <Accordion type="multiple" className="rounded-2xl overflow-hidden border border-border bg-card">
-              {Object.entries(groupedModels).map(([series, models]) => (
-                <AccordionItem key={series} value={series}>
-                  <AccordionTrigger className="px-5 py-4">
-                    <div className="flex min-w-0 flex-1 items-center justify-between gap-4 text-left">
-                      <span className="truncate text-base font-semibold text-foreground">{series}</span>
-                      <span className="shrink-0 text-sm font-normal text-muted-foreground">
-                        {models.length} model{models.length === 1 ? "" : "s"}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="border-t border-border bg-muted/20 px-5 py-5">
-                    <div className="rounded-2xl overflow-hidden divide-y divide-border border border-border bg-background">
+          )}
+
+          <section className="mt-10">
+            {loading ? (
+              <div className="border border-dashed border-black/20 px-6 py-16 text-center text-sm text-black/45">Waiting for model data...</div>
+            ) : Object.keys(groupedModels).length > 0 ? (
+              <Accordion type="multiple" className="border-t border-black/15">
+                {Object.entries(groupedModels).map(([series, models], seriesIndex) => (
+                  <AccordionItem key={series} value={series} className="border-b border-black/15">
+                    <AccordionTrigger className="py-5 hover:no-underline">
+                      <div className="grid min-w-0 flex-1 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 text-left sm:grid-cols-[4rem_minmax(0,1fr)_auto] sm:gap-6">
+                        <span className="text-xs tabular-nums text-black/30">{String(seriesIndex + 1).padStart(2, "0")}</span>
+                        <span className="truncate text-2xl font-medium tracking-[-0.04em] sm:text-3xl">{series}</span>
+                        <span className="shrink-0 text-xs uppercase tracking-[0.08em] text-black/40">{models.length} models</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="border-t border-black/10 bg-black/[0.025] py-0">
                       {models.map((model, modelIndex) => (
-                        <div key={`${model.mainModelName}-${modelIndex}`} className="p-5">
-                          <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-                            <h3 className="text-base font-semibold text-foreground">{model.mainModelName}</h3>
-                            {model.codename && (
-                              <p className="text-sm text-muted-foreground">
-                                codename <code className="text-foreground">{model.codename}</code>
-                              </p>
-                            )}
+                        <div key={`${model.mainModelName}-${modelIndex}`} className="border-b border-black/10 px-4 py-6 last:border-b-0 sm:px-6">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                            <h3 className="text-xl font-medium tracking-[-0.03em]">{model.mainModelName}</h3>
+                            {model.codename && <p className="text-xs uppercase tracking-[0.08em] text-black/45">codename <code className="normal-case tracking-normal text-black">{model.codename}</code></p>}
                           </div>
-                          <div className="mt-3 divide-y divide-border border border-border">
+                          <div className="mt-5 border-t border-black/15">
                             {model.variants.map((variant, variantIndex) => (
-                              <div key={`${variant.modelNumber}-${variantIndex}`} className="flex flex-col gap-1 px-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                                <span className="min-w-0 break-words text-sm text-muted-foreground">{variant.variantName}</span>
-                                <code className="shrink-0 text-sm font-medium text-foreground">{variant.modelNumber}</code>
+                              <div key={`${variant.modelNumber}-${variantIndex}`} className="grid gap-1 border-b border-black/10 py-3 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4">
+                                <span className="min-w-0 break-words text-sm text-black/55">{variant.variantName}</span>
+                                <code className="shrink-0 text-sm font-medium">{variant.modelNumber}</code>
                               </div>
                             ))}
                           </div>
                         </div>
                       ))}
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          ) : (
-            <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
-              <Search className="mx-auto size-5 text-muted-foreground" aria-hidden="true" />
-              <p className="mt-3 text-base font-medium text-foreground">{searchQuery ? "No models found" : "No models available"}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {searchQuery ? `Try another search for "${searchQuery}".` : "This brand has no parsed model entries."}
-              </p>
-              {searchQuery && (
-                <Button type="button" variant="outline" size="sm" onClick={() => { setSearchQuery(""); setSearchInput("") }} className="mt-4">
-                  Show all models
-                </Button>
-              )}
-            </div>
-          )}
-        </section>
-      </main>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            ) : (
+              <div className="py-20 text-center">
+                <p className="editorial-kicker text-black/35">No match</p>
+                <p className="mt-4 text-3xl tracking-[-0.04em]">{searchQuery ? `Nothing found for “${searchQuery}”.` : "No models available."}</p>
+                {searchQuery && <button type="button" onClick={() => { setSearchQuery(""); setSearchInput("") }} className="mt-6 text-xs uppercase tracking-[0.1em] underline underline-offset-4">Show all models</button>}
+              </div>
+            )}
+          </section>
+        </div>
+      </section>
 
       <Footer />
     </div>
