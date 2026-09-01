@@ -43,28 +43,21 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
       setLoadingMessage("Initializing...")
 
       try {
-        console.log("Loading all brands and models...")
-
         const allModelsGlobalCacheKey = "all_models_global_data"
         const allBrandsMetadataKey = "all_brands_metadata"
         const cachedGlobalModels = cacheManager.get<Brand[]>(allModelsGlobalCacheKey)
 
         if (cachedGlobalModels) {
-          console.log("Loading all data (brands and models) from global cache")
           setLoadingMessage("Loading all data from cache...")
           setAllBrands(cachedGlobalModels)
           setFilteredBrands(cachedGlobalModels)
           setIsFromCache(true)
-
-          const info = cacheManager.getCacheInfo(allModelsGlobalCacheKey)
-          setCacheInfo(info)
+          setCacheInfo(cacheManager.getCacheInfo(allModelsGlobalCacheKey))
         } else {
-          console.log("Fetching fresh data for all brands, then models in background")
           setLoadingMessage("Fetching brands list from repository...")
           setIsFromCache(false)
 
           const files = await fetchBrandFiles()
-
           if (files.length === 0) {
             setError("No brand files found in the repository")
             return
@@ -81,22 +74,17 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
           setAllBrands(brandMetadata)
           setFilteredBrands(brandMetadata)
           setLoading(false)
-
           setIsModelsLoading(true)
           setModelsLoadedCount(0)
 
           const resultsMap = new Map<string, Brand>()
-
           await Promise.allSettled(
             brandMetadata.map(async (brand) => {
               try {
                 const models = await loadBrandModels(brand.filename, brand.slug)
                 resultsMap.set(brand.slug, { ...brand, models })
-                setAllBrands((prev) =>
-                  prev.map((item) => (item.slug === brand.slug ? { ...item, models } : item)),
-                )
-              } catch (error) {
-                console.error(`Failed to load models for ${brand.name}:`, error)
+                setAllBrands((prev) => prev.map((item) => (item.slug === brand.slug ? { ...item, models } : item)))
+              } catch {
                 resultsMap.set(brand.slug, { ...brand, models: [] })
               } finally {
                 setModelsLoadedCount((count) => count + 1)
@@ -106,16 +94,11 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
 
           const completedBrands = brandMetadata.map((brand) => resultsMap.get(brand.slug) ?? brand)
           cacheManager.set(allModelsGlobalCacheKey, completedBrands)
-          console.log("All global data cached.")
-
-          const info = cacheManager.getCacheInfo(allModelsGlobalCacheKey)
-          setCacheInfo(info)
+          setCacheInfo(cacheManager.getCacheInfo(allModelsGlobalCacheKey))
           setIsModelsLoading(false)
         }
       } catch (error) {
-        console.error("Error loading data:", error)
         const errorMessage = error instanceof Error ? error.message : "Unknown error"
-
         if (errorMessage.includes("GitHub token not configured")) {
           setError("GitHub token not configured. Please add GITHUB_TOKEN to your .env.local file.")
         } else if (errorMessage.includes("rate limit")) {
@@ -189,21 +172,16 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
     }
   }, [allBrands, searchQuery])
 
-  const handleRetry = () => {
-    setRetryCount((prev) => prev + 1)
-  }
-
+  const handleRetry = () => setRetryCount((prev) => prev + 1)
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") handleSearch()
   }
-
   const handleRefreshData = () => {
     cacheManager.delete("all_brands_metadata")
     cacheManager.delete("all_models_global_data")
     allBrands.forEach((brand) => cacheManager.delete(`brand_${brand.slug}`))
     setRetryCount((prev) => prev + 1)
   }
-
   const clearSearch = () => {
     setSearchQuery("")
     setSearchInput("")
@@ -219,28 +197,15 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
 
   if (error) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-6">
-        <section className="w-full max-w-lg rounded-2xl border border-destructive/50 bg-card p-5">
-          <div className="flex items-center gap-2 text-base font-semibold uppercase tracking-[0.08em] text-destructive">
+      <div className="flex min-h-dvh items-center justify-center bg-[#292b2d] px-4 py-6 text-[#e8e7df]">
+        <section className="w-full max-w-xl border border-[#ff8147] p-6 md:p-8">
+          <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-[#ff8147]">
             <AlertCircle className="size-4" aria-hidden="true" />
             <h1>Unable to load phone data</h1>
           </div>
-          <p className="mt-4 text-base text-destructive">{error}</p>
-          {error.includes("token") && (
-            <p className="mt-2 text-sm text-muted-foreground">
-              Set <code className="text-foreground">GITHUB_TOKEN</code> in <code className="text-foreground">.env.local</code> and restart the server.
-            </p>
-          )}
-          <div className="mt-5 flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={handleRetry}>
-              <RefreshCw aria-hidden="true" />
-              Retry
-            </Button>
-            {error.includes("token") && (
-              <Button type="button" variant="ghost" onClick={() => window.open("https://github.com/settings/tokens", "_blank")}>
-                Get GitHub token
-              </Button>
-            )}
+          <p className="mt-6 text-lg">{error}</p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            <Button type="button" variant="outline" onClick={handleRetry}><RefreshCw aria-hidden="true" />Retry</Button>
           </div>
         </section>
       </div>
@@ -248,38 +213,38 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
   }
 
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="border-b border-border bg-background">
-        <div className="mx-auto flex w-full max-w-screen-xl items-center justify-between gap-6 px-4 py-4 md:px-6 lg:px-8">
-          <div className="min-w-0">
-            <p className="text-base font-semibold tracking-[0.12em] text-foreground">SERAPHIM</p>
-            <p className="mt-0.5 truncate text-sm uppercase tracking-[0.14em] text-muted-foreground">Phone model index</p>
+    <div className="min-h-dvh overflow-x-hidden bg-background text-foreground">
+      <section className="bg-[#292b2d] text-[#e8e7df]">
+        <header className="editorial-shell flex items-center justify-between border-b border-white/10 py-5">
+          <div>
+            <p className="text-sm font-semibold tracking-[0.14em]">SERAPHIM</p>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-white/45">Phone model index</p>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <p className="hidden text-sm text-muted-foreground sm:block">
+          <div className="flex items-center gap-4">
+            <p className="hidden text-xs uppercase tracking-[0.14em] text-white/45 sm:block">
               {allBrands.length} brands · {totalModels} models
             </p>
             <ThemeToggle />
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="mx-auto w-full max-w-screen-xl px-4 py-8 md:px-6 md:py-12">
-        <section className="rounded-2xl overflow-hidden border border-border bg-card">
-          <div className="border-b border-border px-5 py-5 md:px-6">
-            <p className="text-sm font-medium uppercase tracking-[0.12em] text-muted-foreground">Search index</p>
-            <h1 className="mt-1 text-xl font-semibold text-foreground">Find a phone model</h1>
+        <div className="editorial-shell grid min-h-[72vh] items-end gap-12 py-14 md:grid-cols-[1.15fr_.85fr] md:py-20">
+          <div>
+            <p className="editorial-kicker editorial-orange">Independent phone directory</p>
+            <h1 className="editorial-display mt-7">Find.<br />Any.<br /><span className="editorial-olive">Phone.</span></h1>
           </div>
-          <div className="p-5 md:p-6">
-            <label htmlFor="global-search" className="mb-2 block text-sm font-medium text-foreground">
-              Brands, models, codenames, or model numbers
-            </label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <div className="relative min-w-0 flex-1">
-                <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+
+          <div className="pb-2 md:pb-4">
+            <div className="mb-12 max-w-md text-sm leading-6 text-white/55">
+              Search brands, models, codenames and model numbers from one clean technical index.
+            </div>
+            <label htmlFor="global-search" className="editorial-kicker mb-3 block text-white/45">Search the index</label>
+            <div className="flex border-b border-white/35">
+              <div className="relative flex-1">
+                <Search className="pointer-events-none absolute left-0 top-1/2 size-4 -translate-y-1/2 text-[#ff8147]" aria-hidden="true" />
                 <Input
                   id="global-search"
-                  placeholder="e.g. Galaxy, Pixel, SM-S918B"
+                  placeholder="Galaxy, Pixel, SM-S918B..."
                   value={searchInput}
                   onChange={(event) => {
                     setSearchInput(event.target.value)
@@ -287,78 +252,63 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
                   }}
                   onKeyDown={handleKeyDown}
                   disabled={loading}
-                  className="h-10 pl-10"
+                  className="h-12 rounded-none border-0 bg-transparent pl-7 text-base text-white shadow-none placeholder:text-white/25 focus-visible:ring-0"
                 />
               </div>
-              <Button type="button" onClick={handleSearch} disabled={loading} className="h-10 w-full sm:w-auto">
-                Search
+              <Button type="button" onClick={handleSearch} disabled={loading} className="h-12 rounded-none bg-[#ff8147] px-6 text-[#292b2d] hover:bg-[#ff9466]">
+                Search <ArrowRight aria-hidden="true" />
               </Button>
             </div>
           </div>
-        </section>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border py-4 text-sm text-muted-foreground">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="size-1.5 shrink-0 bg-primary" aria-hidden="true" />
-            <span>{allBrands.length} brands · {totalModels} models</span>
-            {cacheInfo && <span className="hidden sm:inline">· {cacheStatus}</span>}
-          </div>
-          <Button type="button" variant="ghost" size="sm" onClick={handleRefreshData}>
-            <RefreshCw aria-hidden="true" />
-            Refresh
-          </Button>
         </div>
+      </section>
 
-        {loading && (
-          <div className="flex items-center gap-2 border-b border-border py-2 text-sm text-muted-foreground">
-            <span className="size-1.5 animate-pulse bg-primary" aria-hidden="true" />
-            {loadingMessage || "Loading phone data..."}
+      <section className="bg-[#e8e7df] text-[#292b2d]">
+        <div className="editorial-shell py-14 md:py-20">
+          <div className="grid gap-10 border-b border-black/15 pb-12 md:grid-cols-[.55fr_1.45fr] md:items-end">
+            <div className="editorial-kicker text-black/45">Directory / {searchQuery.trim() ? "filtered" : "all brands"}</div>
+            <h2 className="editorial-section-title"><span className="text-[#8f987b]">Browse</span><br />the index.</h2>
           </div>
-        )}
 
-        {cacheInfo && <p className="py-2 text-sm text-muted-foreground sm:hidden">{cacheStatus}</p>}
-
-        {isModelsLoading && (
-          <div className="flex items-center gap-2 border-b border-border py-2 text-sm text-muted-foreground">
-            <span className="size-1.5 animate-pulse bg-primary" aria-hidden="true" />
-            Loading models {modelsLoadedCount}/{allBrands.length} · you can browse brands now
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/15 py-4 text-xs uppercase tracking-[0.1em] text-black/45">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="size-1.5 shrink-0 bg-[#ff8147]" aria-hidden="true" />
+              <span>{allBrands.length} brands · {totalModels} models</span>
+              {cacheInfo && <span className="hidden sm:inline">· {cacheStatus}</span>}
+            </div>
+            <button type="button" onClick={handleRefreshData} className="flex items-center gap-2 hover:text-black">
+              <RefreshCw className="size-3.5" aria-hidden="true" /> Refresh
+            </button>
           </div>
-        )}
 
-        {searchQuery.trim() && (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border py-4">
-            <p className="text-sm text-muted-foreground">
-              {searchMode === "models"
-                ? `${searchResults.length} model${searchResults.length === 1 ? "" : "s"} matching "${searchQuery}"`
-                : `${filteredBrands.length} brand${filteredBrands.length === 1 ? "" : "s"} matching "${searchQuery}"`}
-            </p>
-            <Button type="button" variant="ghost" size="sm" onClick={clearSearch}>Clear search</Button>
-          </div>
-        )}
+          {(loading || isModelsLoading) && (
+            <div className="border-b border-black/15 py-3 text-xs uppercase tracking-[0.08em] text-black/45">
+              {loading ? (loadingMessage || "Loading phone data...") : `Loading models ${modelsLoadedCount}/${allBrands.length}`}
+            </div>
+          )}
 
-        <section className="mt-8">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <h2 className="text-lg font-semibold text-foreground">
-              {searchQuery.trim() ? (searchMode === "models" ? "Model results" : "Brand results") : "Browse by brand"}
-            </h2>
-            <span className="text-sm uppercase tracking-[0.1em] text-muted-foreground">
-              {searchQuery.trim() ? "Filtered" : "Directory"}
-            </span>
-          </div>
+          {searchQuery.trim() && (
+            <div className="flex items-center justify-between gap-4 border-b border-black/15 py-4 text-sm">
+              <p>
+                {searchMode === "models"
+                  ? `${searchResults.length} model${searchResults.length === 1 ? "" : "s"} matching “${searchQuery}”`
+                  : `${filteredBrands.length} brand${filteredBrands.length === 1 ? "" : "s"} matching “${searchQuery}”`}
+              </p>
+              <button type="button" onClick={clearSearch} className="text-xs uppercase tracking-[0.1em] underline underline-offset-4">Clear</button>
+            </div>
+          )}
 
           {searchMode === "models" && searchResults.length > 0 && (
-            <div className="rounded-2xl overflow-hidden divide-y divide-border border border-border bg-card">
+            <div className="border-b border-black/15">
               {searchResults.map((result, index) => (
-                <div key={`${result.brandSlug}-${result.modelNumber}-${index}`} className="grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_minmax(180px,auto)] sm:items-center">
-                  <div className="min-w-0">
-                    <p className="truncate text-base font-medium text-foreground">{result.mainModelName}</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {result.brand}{result.codename && ` · ${result.codename}`}
-                    </p>
+                <div key={`${result.brandSlug}-${result.modelNumber}-${index}`} className="grid gap-3 border-b border-black/10 py-5 last:border-b-0 sm:grid-cols-[1fr_auto] sm:items-end">
+                  <div>
+                    <p className="text-xl font-medium tracking-[-0.025em]">{result.mainModelName}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.09em] text-black/45">{result.brand}{result.codename && ` · ${result.codename}`}</p>
                   </div>
-                  <div className="min-w-0 sm:text-right">
-                    <p className="truncate text-sm text-muted-foreground">{result.variantName}</p>
-                    <code className="text-sm text-foreground">{result.modelNumber}</code>
+                  <div className="sm:text-right">
+                    <p className="text-sm text-black/45">{result.variantName}</p>
+                    <code className="text-sm">{result.modelNumber}</code>
                   </div>
                 </div>
               ))}
@@ -366,8 +316,8 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
           )}
 
           {searchMode === "brands" && filteredBrands.length > 0 && (
-            <div className="rounded-2xl overflow-hidden divide-y divide-border border border-border bg-card">
-              {filteredBrands.map((brand) => (
+            <div>
+              {filteredBrands.map((brand, index) => (
                 <Link
                   key={brand.slug}
                   href={`/${brand.slug}`}
@@ -376,30 +326,23 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
                   onFocus={() => onWarmBrand?.(brand)}
                   onTouchStart={() => onWarmBrand?.(brand)}
                   onClick={(event) => {
-                    if (
-                      !onNavigateBrand ||
-                      event.button !== 0 ||
-                      event.metaKey ||
-                      event.ctrlKey ||
-                      event.shiftKey ||
-                      event.altKey
-                    ) return
-
+                    if (!onNavigateBrand || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
                     event.preventDefault()
                     onNavigateBrand(brand)
                   }}
-                  className="group relative isolate flex min-h-14 w-full items-center justify-between gap-4 overflow-hidden px-5 py-4 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+                  className="group relative grid min-h-24 grid-cols-[3rem_minmax(0,1fr)_auto] items-center gap-3 overflow-hidden border-b border-black/15 py-4 transition-colors hover:bg-black/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff8147] focus-visible:ring-inset sm:grid-cols-[4rem_minmax(0,1fr)_auto] sm:gap-6"
                 >
                   {progressBrandSlug === brand.slug && (
-                    <span className="brand-row-progress pointer-events-none absolute inset-y-0 left-0 z-0 w-full origin-left bg-primary/15" aria-hidden="true" />
+                    <span className="brand-row-progress pointer-events-none absolute inset-y-0 left-0 z-0 w-full origin-left bg-[#ff8147]/15" aria-hidden="true" />
                   )}
+                  <span className="relative z-10 text-xs tabular-nums text-black/35">{String(index + 1).padStart(2, "0")}</span>
                   <span className="relative z-10 min-w-0">
-                    <span className="block truncate text-base font-medium text-foreground">{brand.name}</span>
-                    <span className="mt-1 block truncate text-sm uppercase tracking-[0.08em] text-muted-foreground">{brand.slug}</span>
+                    <span className="block truncate text-2xl font-medium tracking-[-0.04em] sm:text-3xl">{brand.name}</span>
+                    <span className="mt-1 block truncate text-[10px] uppercase tracking-[0.13em] text-black/40">{brand.slug}</span>
                   </span>
-                  <span className="relative z-10 flex shrink-0 items-center gap-3 text-sm text-muted-foreground">
-                    {brand.models.length} model{brand.models.length === 1 ? "" : "s"}
-                    <ArrowRight className="size-4 text-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                  <span className="relative z-10 flex shrink-0 items-center gap-3 text-xs uppercase tracking-[0.08em] text-black/45">
+                    <span className="hidden sm:inline">{brand.models.length} models</span>
+                    <ArrowRight className="size-4 text-[#ff8147] transition-transform group-hover:translate-x-1" aria-hidden="true" />
                   </span>
                 </Link>
               ))}
@@ -407,21 +350,14 @@ export function HomePage({ onWarmBrand, onNavigateBrand, progressBrandSlug }: Ho
           )}
 
           {searchQuery.trim() && filteredBrands.length === 0 && searchResults.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center">
-              <Search className="mx-auto size-5 text-muted-foreground" aria-hidden="true" />
-              <p className="mt-3 text-base font-medium text-foreground">No results found</p>
-              <p className="mt-1 text-sm text-muted-foreground">Try another search for “{searchQuery}”.</p>
-              <Button type="button" variant="outline" size="sm" onClick={clearSearch} className="mt-4">Show all brands</Button>
+            <div className="py-20 text-center">
+              <p className="editorial-kicker text-black/35">No match</p>
+              <p className="mt-4 text-3xl tracking-[-0.04em]">Nothing found for “{searchQuery}”.</p>
+              <button type="button" onClick={clearSearch} className="mt-6 text-xs uppercase tracking-[0.1em] underline underline-offset-4">Show all brands</button>
             </div>
           )}
-
-          {!searchQuery.trim() && filteredBrands.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-border px-6 py-12 text-center text-base text-muted-foreground">
-              {loading ? "Waiting for brand data..." : "No brands available."}
-            </div>
-          )}
-        </section>
-      </main>
+        </div>
+      </section>
 
       <Footer />
     </div>
